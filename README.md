@@ -154,3 +154,18 @@ python3 src/phase2_detector.py \
 ```
 
 This is a production inference framework, but its default zero-shot model still needs validation against a labeled ShopGoodwill dataset before purchasing decisions should be automatic. The confidence gates deliberately route borderline socket and damage cases to review.
+
+### Daily Phase 2 integration
+
+The spatial detector is now part of the normal daily pipeline. The default `--phase2 on` mode runs both detectors, uses the Phase 2 spatial result as the primary result, retains the legacy CLIP score for comparison, and flags disagreements for human review.
+
+```bash
+python3 src/daily_run.py --phase2 on
+```
+
+Alternative modes:
+
+- `--phase2 off`: legacy CLIP detector only.
+- `--phase2 only`: spatial detector only; images are downloaded without running legacy inference.
+
+The detector-version fingerprint now includes the Phase 2 source, class configuration, and model orchestration code. Changing any Phase 2 detector logic or class thresholds therefore causes active listings to be reprocessed. Annotated images are written under `output/annotated/`, and the merged results used by the rolling ledger are written to `output/new_worker_value_report.json`.

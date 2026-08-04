@@ -12,6 +12,9 @@ from processing_state import detector_version
 ROOT = Path(__file__).resolve().parents[1]
 DETECTOR_FILES = [
     ROOT / "src" / "motherboard_search.py",
+    ROOT / "src" / "object_detector.py",
+    ROOT / "src" / "phase2_detector.py",
+    ROOT / "config" / "detection_classes.json",
     ROOT / "src" / "collect_true_galleries.js",
 ]
 
@@ -29,6 +32,8 @@ def main() -> int:
     parser.add_argument("--browser-retries", type=int, default=4)
     parser.add_argument("--gallery-concurrency", type=int, default=4)
     parser.add_argument("--download-workers", type=int, default=8)
+    parser.add_argument("--phase2", choices=("on", "off", "only"), default="on")
+    parser.add_argument("--phase2-model", default="IDEA-Research/grounding-dino-tiny")
     parser.add_argument("--output-dir", type=Path, default=ROOT / "output")
     parser.add_argument("--state", type=Path, default=ROOT / "data" / "processed.json")
     args = parser.parse_args()
@@ -41,7 +46,11 @@ def main() -> int:
     candidates = output / "candidates.json"
     pending = output / "pending_listings.json"
     galleries = output / "pending_galleries.json"
+    legacy_results = output / "legacy_worker_value_report.json"
+    phase2_manifest = output / "phase2_manifest.json"
+    phase2_results = output / "phase2_report.json"
     results = output / "new_worker_value_report.json"
+    annotated = output / "annotated"
     search_errors = output / "search_errors.json"
     gallery_errors = output / "gallery_errors.json"
     image_errors = output / "image_download_errors.json"
@@ -81,10 +90,35 @@ def main() -> int:
         sys.executable, "src/extract_pending_galleries.py",
         "--candidates", str(pending), "--output", str(galleries),
     ])
+    cache_dir = output / "cache" / version
+    if args.phase2 != "only":
+        run([
+            sys.executable, "src/motherboard_search.py", "--galleries", str(galleries),
+            "--output", str(legacy_results), "--cache-dir", str(cache_dir),
+            "--errors", str(image_errors), "--download-workers", str(args.download_workers),
+        ])
+    else:
+        run([
+            sys.executable, "src/download_gallery_images.py", "--galleries", str(galleries),
+            "--cache-dir", str(cache_dir), "--errors", str(image_errors),
+            "--download-workers", str(args.download_workers),
+        ])
+
+    if args.phase2 != "off":
+        run([
+            sys.executable, "src/build_local_manifest.py", "--galleries", str(galleries),
+            "--cache-dir", str(cache_dir), "--output", str(phase2_manifest),
+        ])
+        run([
+            sys.executable, "src/phase2_detector.py", "--manifest", str(phase2_manifest),
+            "--model", args.phase2_model, "--output", str(phase2_results),
+            "--annotated-dir", str(annotated),
+        ])
+
     run([
-        sys.executable, "src/motherboard_search.py", "--galleries", str(galleries),
-        "--output", str(results), "--cache-dir", str(output / "cache" / version),
-        "--errors", str(image_errors), "--download-workers", str(args.download_workers),
+        sys.executable, "src/merge_detector_results.py",
+        "--legacy", str(legacy_results), "--phase2", str(phase2_results),
+        "--mode", args.phase2, "--output", str(results),
     ])
     run([
         sys.executable, "src/processing_state.py", "merge",
@@ -108,6 +142,10 @@ def main() -> int:
         "search_errors": read_errors(search_errors),
         "gallery_errors": read_errors(gallery_errors),
         "image_download_errors": read_errors(image_errors),
+        "phase2_mode": args.phase2,
+        "phase2_model": args.phase2_model if args.phase2 != "off" else None,
+        "phase2_report": str(phase2_results) if phase2_results.exists() else None,
+        "annotated_dir": str(annotated) if annotated.exists() else None,
         "state": str(args.state),
     }
     run_report.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
