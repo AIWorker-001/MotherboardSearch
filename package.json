@@ -1,0 +1,13 @@
+{
+  "name": "motherboard-search",
+  "version": "0.1.0",
+  "private": true,
+  "description": "ShopGoodwill motherboard and hidden-CPU scoring for AIWorker pool sourcing",
+  "scripts": {
+    "search": "node src/search_shopgoodwill.js",
+    "galleries": "node src/collect_true_galleries.js"
+  },
+  "dependencies": {
+    "playwright": "^1.54.2"
+  }
+}

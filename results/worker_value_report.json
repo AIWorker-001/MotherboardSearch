@@ -1,0 +1,1918 @@
+[
+  {
+    "id": "272508382",
+    "title": "Asus Rog Maximus X Code Lga 1151 Intel Motherboard Ddr4 Usb 3.1 Hdmi | ShopGoodwill.com",
+    "cpu_state": "socket_cover_likely",
+    "value_score": -35,
+    "maxima": {
+      "intel_cooler": 0.157,
+      "amd_cooler": 0.311,
+      "tower_cooler": 0.157,
+      "cpu_visible": 0.163,
+      "empty_socket": 0.611,
+      "socket_cover": 0.68,
+      "ram": 0.135,
+      "nvme": 0.739,
+      "none": 0.591
+    },
+    "images": [
+      {
+        "image": 1,
+        "best": {
+          "intel_cooler": {
+            "score": 0.1573,
+            "crop": "g3-2-0"
+          },
+          "amd_cooler": {
+            "score": 0.2916,
+            "crop": "g3-2-0"
+          },
+          "tower_cooler": {
+            "score": 0.1479,
+            "crop": "g3-1-0"
+          },
+          "cpu_visible": {
+            "score": 0.0894,
+            "crop": "g3-0-0"
+          },
+          "empty_socket": {
+            "score": 0.3811,
+            "crop": "g2-1-1"
+          },
+          "socket_cover": {
+            "score": 0.3594,
+            "crop": "g3-0-1"
+          },
+          "ram": {
+            "score": 0.07,
+            "crop": "g3-2-2"
+          },
+          "nvme": {
+            "score": 0.3288,
+            "crop": "g3-1-2"
+          },
+          "none": {
+            "score": 0.273,
+            "crop": "g2-1-0"
+          }
+        },
+        "ocr": "SuSE\nap aan\n\nb)\n\n& SHOPGOODWILL,,,\n"
+      },
+      {
+        "image": 2,
+        "best": {
+          "intel_cooler": {
+            "score": 0.1311,
+            "crop": "g3-0-0"
+          },
+          "amd_cooler": {
+            "score": 0.3106,
+            "crop": "g3-0-0"
+          },
+          "tower_cooler": {
+            "score": 0.1569,
+            "crop": "g2-1-0"
+          },
+          "cpu_visible": {
+            "score": 0.1204,
+            "crop": "g3-1-0"
+          },
+          "empty_socket": {
+            "score": 0.3663,
+            "crop": "g3-2-2"
+          },
+          "socket_cover": {
+            "score": 0.4529,
+            "crop": "g2-0-0"
+          },
+          "ram": {
+            "score": 0.1349,
+            "crop": "g3-2-0"
+          },
+          "nvme": {
+            "score": 0.2737,
+            "crop": "g2-0-1"
+          },
+          "none": {
+            "score": 0.2163,
+            "crop": "g2-1-0"
+          }
+        },
+        "ocr": "\\ \\e\nUSBi314 sLon_MoD'\n\nLiners crepe\n\"ADDLHEADERL \u201cADD_NEADERZ\n\n& SHOPGOODWILL,,,,\n"
+      },
+      {
+        "image": 3,
+        "best": {
+          "intel_cooler": {
+            "score": 0.1097,
+            "crop": "g3-0-0"
+          },
+          "amd_cooler": {
+            "score": 0.1129,
+            "crop": "g3-0-0"
+          },
+          "tower_cooler": {
+            "score": 0.1006,
+            "crop": "g3-2-0"
+          },
+          "cpu_visible": {
+            "score": 0.1161,
+            "crop": "g3-0-2"
+          },
+          "empty_socket": {
+            "score": 0.4854,
+            "crop": "g3-0-2"
+          },
+          "socket_cover": {
+            "score": 0.3813,
+            "crop": "g2-0-0"
+          },
+          "ram": {
+            "score": 0.0719,
+            "crop": "g3-2-1"
+          },
+          "nvme": {
+            "score": 0.739,
+            "crop": "g2-0-1"
+          },
+          "none": {
+            "score": 0.5909,
+            "crop": "g3-2-2"
+          }
+        },
+        "ocr": "&&\\ SHOPGOODWILL,,,,\n"
+      },
+      {
+        "image": 4,
+        "best": {
+          "intel_cooler": {
+            "score": 0.0159,
+            "crop": "g3-0-0"
+          },
+          "amd_cooler": {
+            "score": 0.0136,
+            "crop": "g3-0-0"
+          },
+          "tower_cooler": {
+            "score": 0.0369,
+            "crop": "g3-2-0"
+          },
+          "cpu_visible": {
+            "score": 0.0861,
+            "crop": "g3-2-2"
+          },
+          "empty_socket": {
+            "score": 0.6109,
+            "crop": "full"
+          },
+          "socket_cover": {
+            "score": 0.5371,
+            "crop": "g3-0-2"
+          },
+          "ram": {
+            "score": 0.0482,
+            "crop": "g3-0-2"
+          },
+          "nvme": {
+            "score": 0.1532,
+            "crop": "g3-1-0"
+          },
+          "none": {
+            "score": 0.2753,
+            "crop": "g3-1-0"
+          }
+        },
+        "ocr": "2,\n\nees seas!\n\nco\n\nbe bigs te ox\n\noa\n\n66666068\n\n& SHOPGOODWILL,,,\n"
+      },
+      {
+        "image": 5,
+        "best": {
+          "intel_cooler": {
+            "score": 0.0344,
+            "crop": "g3-0-1"
+          },
+          "amd_cooler": {
+            "score": 0.0335,
+            "crop": "g3-1-1"
+          },
+          "tower_cooler": {
+            "score": 0.0388,
+            "crop": "g3-0-1"
+          },
+          "cpu_visible": {
+            "score": 0.1627,
+            "crop": "g3-1-0"
+          },
+          "empty_socket": {
+            "score": 0.5666,
+            "crop": "g3-2-0"
+          },
+          "socket_cover": {
+            "score": 0.68,
+            "crop": "g3-0-2"
+          },
+          "ram": {
+            "score": 0.0541,
+            "crop": "g2-0-1"
+          },
+          "nvme": {
+            "score": 0.0753,
+            "crop": "full"
+          },
+          "none": {
+            "score": 0.25,
+            "crop": "g3-2-2"
+          }
+        },
+        "ocr": "Niade\n\nws 3\n\n\u2014f ..- es\nt)\n>\n\n"
+      }
+    ]
+  },
+  {
+    "id": "272496796",
+    "title": "Asus Rog Strix Z370-e Gaming Atx Motherboard Lga 1151 Ddr4 M.2 Usb 3.1 | ShopGoodwill.com",
+    "cpu_state": "unclear",
+    "value_score": 25,
+    "maxima": {
+      "intel_cooler": 0.083,
+      "amd_cooler": 0.231,
+      "tower_cooler": 0.297,
+      "cpu_visible": 0.524,
+      "empty_socket": 0.581,
+      "socket_cover": 0.518,
+      "ram": 0.056,
+      "nvme": 0.629,
+      "none": 0.465
+    },
+    "images": [
+      {
+        "image": 1,
+        "best": {
+          "intel_cooler": {
+            "score": 0.0523,
+            "crop": "g2-1-1"
+          },
+          "amd_cooler": {
+            "score": 0.0616,
+            "crop": "full"
+          },
+          "tower_cooler": {
+            "score": 0.093,
+            "crop": "g2-1-1"
+          },
+          "cpu_visible": {
+            "score": 0.3818,
+            "crop": "g3-1-1"
+          },
+          "empty_socket": {
+            "score": 0.5814,
+            "crop": "g3-2-1"
+          },
+          "socket_cover": {
+            "score": 0.3192,
+            "crop": "g3-1-2"
+          },
+          "ram": {
+            "score": 0.0484,
+            "crop": "g3-1-1"
+          },
+          "nvme": {
+            "score": 0.3934,
+            "crop": "g3-0-2"
+          },
+          "none": {
+            "score": 0.3629,
+            "crop": "g2-0-1"
+          }
+        },
+        "ocr": "Sm\n\nLOR\n"
+      },
+      {
+        "image": 2,
+        "best": {
+          "intel_cooler": {
+            "score": 0.0736,
+            "crop": "g3-1-1"
+          },
+          "amd_cooler": {
+            "score": 0.2305,
+            "crop": "g3-1-1"
+          },
+          "tower_cooler": {
+            "score": 0.2975,
+            "crop": "g3-1-1"
+          },
+          "cpu_visible": {
+            "score": 0.368,
+            "crop": "g2-0-1"
+          },
+          "empty_socket": {
+            "score": 0.3346,
+            "crop": "g3-0-2"
+          },
+          "socket_cover": {
+            "score": 0.5182,
+            "crop": "g3-0-0"
+          },
+          "ram": {
+            "score": 0.0265,
+            "crop": "g3-2-0"
+          },
+          "nvme": {
+            "score": 0.2699,
+            "crop": "g3-1-2"
+          },
+          "none": {
+            "score": 0.2929,
+            "crop": "full"
+          }
+        },
+        "ocr": "La rs\n\nGAMING ~:\na BB\n\n_\n\nwy\na\n\nz,\nM4 wt\n\nCOME\n\nfi\n"
+      },
+      {
+        "image": 3,
+        "best": {
+          "intel_cooler": {
+            "score": 0.0357,
+            "crop": "g2-0-0"
+          },
+          "amd_cooler": {
+            "score": 0.0241,
+            "crop": "g2-0-0"
+          },
+          "tower_cooler": {
+            "score": 0.123,
+            "crop": "g2-0-0"
+          },
+          "cpu_visible": {
+            "score": 0.5245,
+            "crop": "g3-1-0"
+          },
+          "empty_socket": {
+            "score": 0.4017,
+            "crop": "g3-2-1"
+          },
+          "socket_cover": {
+            "score": 0.4605,
+            "crop": "g3-1-2"
+          },
+          "ram": {
+            "score": 0.0379,
+            "crop": "g3-1-1"
+          },
+          "nvme": {
+            "score": 0.1282,
+            "crop": "g2-0-1"
+          },
+          "none": {
+            "score": 0.2289,
+            "crop": "g3-2-2"
+          }
+        },
+        "ocr": "WWW WA\n\nladadie\nOA\n\np\u201d  FITESSSSETS |\n\n"
+      },
+      {
+        "image": 4,
+        "best": {
+          "intel_cooler": {
+            "score": 0.0547,
+            "crop": "g2-1-1"
+          },
+          "amd_cooler": {
+            "score": 0.0526,
+            "crop": "g3-2-1"
+          },
+          "tower_cooler": {
+            "score": 0.156,
+            "crop": "g3-2-1"
+          },
+          "cpu_visible": {
+            "score": 0.2682,
+            "crop": "g3-1-0"
+          },
+          "empty_socket": {
+            "score": 0.3731,
+            "crop": "g3-0-1"
+          },
+          "socket_cover": {
+            "score": 0.5042,
+            "crop": "g3-0-2"
+          },
+          "ram": {
+            "score": 0.025,
+            "crop": "g3-0-0"
+          },
+          "nvme": {
+            "score": 0.1376,
+            "crop": "g3-1-1"
+          },
+          "none": {
+            "score": 0.147,
+            "crop": "g2-1-0"
+          }
+        },
+        "ocr": "\u2014-\n\nme eemens asses seneneseers <\nEELELRECELL Eber ennererrrer eececcecovereecvevev yy eee, 3\n\n"
+      },
+      {
+        "image": 5,
+        "best": {
+          "intel_cooler": {
+            "score": 0.0301,
+            "crop": "g2-1-0"
+          },
+          "amd_cooler": {
+            "score": 0.0244,
+            "crop": "g2-1-1"
+          },
+          "tower_cooler": {
+            "score": 0.0572,
+            "crop": "full"
+          },
+          "cpu_visible": {
+            "score": 0.232,
+            "crop": "full"
+          },
+          "empty_socket": {
+            "score": 0.4109,
+            "crop": "g3-2-1"
+          },
+          "socket_cover": {
+            "score": 0.4682,
+            "crop": "g3-1-1"
+          },
+          "ram": {
+            "score": 0.0294,
+            "crop": "g3-1-0"
+          },
+          "nvme": {
+            "score": 0.1062,
+            "crop": "g3-2-0"
+          },
+          "none": {
+            "score": 0.4653,
+            "crop": "g3-2-2"
+          }
+        },
+        "ocr": ""
+      },
+      {
+        "image": 6,
+        "best": {
+          "intel_cooler": {
+            "score": 0.0834,
+            "crop": "g3-2-0"
+          },
+          "amd_cooler": {
+            "score": 0.0749,
+            "crop": "g3-2-0"
+          },
+          "tower_cooler": {
+            "score": 0.0899,
+            "crop": "g3-0-0"
+          },
+          "cpu_visible": {
+            "score": 0.3819,
+            "crop": "g3-2-0"
+          },
+          "empty_socket": {
+            "score": 0.5271,
+            "crop": "g2-1-1"
+          },
+          "socket_cover": {
+            "score": 0.2519,
+            "crop": "g2-1-1"
+          },
+          "ram": {
+            "score": 0.0558,
+            "crop": "g3-1-0"
+          },
+          "nvme": {
+            "score": 0.629,
+            "crop": "full"
+          },
+          "none": {
+            "score": 0.3904,
+            "crop": "g3-1-0"
+          }
+        },
+        "ocr": "OPGOODWILL,,,\n\n"
+      }
+    ]
+  },
+  {
+    "id": "272483350",
+    "title": "Msi Z390-a Pro Atx Motherboard | Lga 1151 | Ddr4 | M.2 | ShopGoodwill.com",
+    "cpu_state": "unclear",
+    "value_score": 0,
+    "maxima": {
+      "intel_cooler": 0.068,
+      "amd_cooler": 0.075,
+      "tower_cooler": 0.129,
+      "cpu_visible": 0.214,
+      "empty_socket": 0.491,
+      "socket_cover": 0.282,
+      "ram": 0.064,
+      "nvme": 0.436,
+      "none": 0.437
+    },
+    "images": [
+      {
+        "image": 1,
+        "best": {
+          "intel_cooler": {
+            "score": 0.0596,
+            "crop": "g3-2-1"
+          },
+          "amd_cooler": {
+            "score": 0.0416,
+            "crop": "g2-0-1"
+          },
+          "tower_cooler": {
+            "score": 0.1287,
+            "crop": "g3-2-1"
+          },
+          "cpu_visible": {
+            "score": 0.1411,
+            "crop": "g3-1-2"
+          },
+          "empty_socket": {
+            "score": 0.4912,
+            "crop": "g2-1-1"
+          },
+          "socket_cover": {
+            "score": 0.2518,
+            "crop": "g3-1-1"
+          },
+          "ram": {
+            "score": 0.0344,
+            "crop": "g3-1-0"
+          },
+          "nvme": {
+            "score": 0.3381,
+            "crop": "g3-0-0"
+          },
+          "none": {
+            "score": 0.4374,
+            "crop": "g3-0-2"
+          }
+        },
+        "ocr": "&&\\ SHOPGOODWILL,,,,\n"
+      },
+      {
+        "image": 2,
+        "best": {
+          "intel_cooler": {
+            "score": 0.0679,
+            "crop": "full"
+          },
+          "amd_cooler": {
+            "score": 0.075,
+            "crop": "g2-1-0"
+          },
+          "tower_cooler": {
+            "score": 0.0812,
+            "crop": "full"
+          },
+          "cpu_visible": {
+            "score": 0.2137,
+            "crop": "g3-1-2"
+          },
+          "empty_socket": {
+            "score": 0.4084,
+            "crop": "g3-2-2"
+          },
+          "socket_cover": {
+            "score": 0.2823,
+            "crop": "g3-1-1"
+          },
+          "ram": {
+            "score": 0.064,
+            "crop": "g3-2-2"
+          },
+          "nvme": {
+            "score": 0.4359,
+            "crop": "g3-1-2"
+          },
+          "none": {
+            "score": 0.2635,
+            "crop": "g3-1-1"
+          }
+        },
+        "ocr": "i SHOPGOODWILL,,,\n"
+      }
+    ]
+  },
+  {
+    "id": "272095387",
+    "title": "Gigabyte Aorus Z690 Elite Ax Ddr5 Pc Motherboard | ShopGoodwill.com",
+    "cpu_state": "empty_socket_likely",
+    "value_score": -100,
+    "maxima": {
+      "intel_cooler": 0.17,
+      "amd_cooler": 0.248,
+      "tower_cooler": 0.233,
+      "cpu_visible": 0.229,
+      "empty_socket": 0.853,
+      "socket_cover": 0.519,
+      "ram": 0.249,
+      "nvme": 0.511,
+      "none": 0.801
+    },
+    "images": [
+      {
+        "image": 1,
+        "best": {
+          "intel_cooler": {
+            "score": 0.0631,
+            "crop": "g3-0-1"
+          },
+          "amd_cooler": {
+            "score": 0.057,
+            "crop": "g3-2-1"
+          },
+          "tower_cooler": {
+            "score": 0.2035,
+            "crop": "g3-1-1"
+          },
+          "cpu_visible": {
+            "score": 0.0867,
+            "crop": "g3-1-1"
+          },
+          "empty_socket": {
+            "score": 0.4512,
+            "crop": "g2-1-1"
+          },
+          "socket_cover": {
+            "score": 0.3474,
+            "crop": "full"
+          },
+          "ram": {
+            "score": 0.0525,
+            "crop": "g3-0-1"
+          },
+          "nvme": {
+            "score": 0.3897,
+            "crop": "g2-0-0"
+          },
+          "none": {
+            "score": 0.8013,
+            "crop": "g3-2-2"
+          }
+        },
+        "ocr": "blast\n\n15 | 26 \u20185. tao | 30 Nga 32 3\n\ni SHOPGOODWILL,,,\n"
+      },
+      {
+        "image": 2,
+        "best": {
+          "intel_cooler": {
+            "score": 0.1701,
+            "crop": "g3-2-1"
+          },
+          "amd_cooler": {
+            "score": 0.2478,
+            "crop": "g3-2-1"
+          },
+          "tower_cooler": {
+            "score": 0.2328,
+            "crop": "g3-2-1"
+          },
+          "cpu_visible": {
+            "score": 0.0515,
+            "crop": "g3-2-0"
+          },
+          "empty_socket": {
+            "score": 0.6248,
+            "crop": "g2-0-1"
+          },
+          "socket_cover": {
+            "score": 0.5191,
+            "crop": "g3-0-1"
+          },
+          "ram": {
+            "score": 0.0822,
+            "crop": "g2-0-0"
+          },
+          "nvme": {
+            "score": 0.1798,
+            "crop": "g2-1-0"
+          },
+          "none": {
+            "score": 0.587,
+            "crop": "g3-2-2"
+          }
+        },
+        "ocr": "3\ne\n\u00ab\u20ac\n\n28 23,30.\n"
+      },
+      {
+        "image": 3,
+        "best": {
+          "intel_cooler": {
+            "score": 0.0476,
+            "crop": "g3-1-1"
+          },
+          "amd_cooler": {
+            "score": 0.1973,
+            "crop": "g3-0-1"
+          },
+          "tower_cooler": {
+            "score": 0.1038,
+            "crop": "g3-2-1"
+          },
+          "cpu_visible": {
+            "score": 0.0758,
+            "crop": "g3-0-0"
+          },
+          "empty_socket": {
+            "score": 0.8526,
+            "crop": "g2-0-1"
+          },
+          "socket_cover": {
+            "score": 0.1392,
+            "crop": "full"
+          },
+          "ram": {
+            "score": 0.0888,
+            "crop": "g3-1-0"
+          },
+          "nvme": {
+            "score": 0.4568,
+            "crop": "full"
+          },
+          "none": {
+            "score": 0.7759,
+            "crop": "g3-2-2"
+          }
+        },
+        "ocr": "aye ARN Lt\n\nea aa\n\ni} SHOPGOODWILL,,,\n"
+      },
+      {
+        "image": 4,
+        "best": {
+          "intel_cooler": {
+            "score": 0.0626,
+            "crop": "g2-0-0"
+          },
+          "amd_cooler": {
+            "score": 0.1196,
+            "crop": "g2-0-0"
+          },
+          "tower_cooler": {
+            "score": 0.1251,
+            "crop": "g2-0-0"
+          },
+          "cpu_visible": {
+            "score": 0.0827,
+            "crop": "g3-0-0"
+          },
+          "empty_socket": {
+            "score": 0.293,
+            "crop": "g2-1-1"
+          },
+          "socket_cover": {
+            "score": 0.3471,
+            "crop": "g3-0-1"
+          },
+          "ram": {
+            "score": 0.0972,
+            "crop": "g3-1-1"
+          },
+          "nvme": {
+            "score": 0.2947,
+            "crop": "g3-2-1"
+          },
+          "none": {
+            "score": 0.7848,
+            "crop": "g3-0-2"
+          }
+        },
+        "ocr": "f i} SHOPGOODWILL,,,\n"
+      },
+      {
+        "image": 5,
+        "best": {
+          "intel_cooler": {
+            "score": 0.0296,
+            "crop": "g3-2-0"
+          },
+          "amd_cooler": {
+            "score": 0.0375,
+            "crop": "g3-2-0"
+          },
+          "tower_cooler": {
+            "score": 0.0533,
+            "crop": "g3-2-0"
+          },
+          "cpu_visible": {
+            "score": 0.1099,
+            "crop": "g3-2-0"
+          },
+          "empty_socket": {
+            "score": 0.6799,
+            "crop": "g2-0-0"
+          },
+          "socket_cover": {
+            "score": 0.3626,
+            "crop": "g2-0-1"
+          },
+          "ram": {
+            "score": 0.0801,
+            "crop": "g3-1-0"
+          },
+          "nvme": {
+            "score": 0.0659,
+            "crop": "g3-2-1"
+          },
+          "none": {
+            "score": 0.6307,
+            "crop": "g3-2-2"
+          }
+        },
+        "ocr": "i} SHOPGOODWILL,,,\n"
+      },
+      {
+        "image": 6,
+        "best": {
+          "intel_cooler": {
+            "score": 0.1563,
+            "crop": "g3-1-1"
+          },
+          "amd_cooler": {
+            "score": 0.2002,
+            "crop": "g2-1-0"
+          },
+          "tower_cooler": {
+            "score": 0.1585,
+            "crop": "g3-1-1"
+          },
+          "cpu_visible": {
+            "score": 0.2286,
+            "crop": "g3-2-0"
+          },
+          "empty_socket": {
+            "score": 0.5459,
+            "crop": "g3-2-2"
+          },
+          "socket_cover": {
+            "score": 0.209,
+            "crop": "g2-0-1"
+          },
+          "ram": {
+            "score": 0.2486,
+            "crop": "g3-2-1"
+          },
+          "nvme": {
+            "score": 0.5112,
+            "crop": "full"
+          },
+          "none": {
+            "score": 0.6208,
+            "crop": "g2-0-0"
+          }
+        },
+        "ocr": "anaer sta Se \" i SHOPGOODWILL,,,,\n"
+      }
+    ]
+  },
+  {
+    "id": "272508344",
+    "title": "Gigabyte Aorus X670 Aorus Elite Ax Am5 Ddr5 Motherboard Pcie M.2 Hdmi Wi-fi | ShopGoodwill.com",
+    "cpu_state": "empty_socket_likely",
+    "value_score": -75,
+    "maxima": {
+      "intel_cooler": 0.154,
+      "amd_cooler": 0.137,
+      "tower_cooler": 0.413,
+      "cpu_visible": 0.147,
+      "empty_socket": 0.678,
+      "socket_cover": 0.702,
+      "ram": 0.174,
+      "nvme": 0.775,
+      "none": 0.41
+    },
+    "images": [
+      {
+        "image": 1,
+        "best": {
+          "intel_cooler": {
+            "score": 0.1264,
+            "crop": "g3-0-0"
+          },
+          "amd_cooler": {
+            "score": 0.1148,
+            "crop": "g3-0-0"
+          },
+          "tower_cooler": {
+            "score": 0.2704,
+            "crop": "g3-2-1"
+          },
+          "cpu_visible": {
+            "score": 0.0955,
+            "crop": "g3-1-1"
+          },
+          "empty_socket": {
+            "score": 0.3409,
+            "crop": "g2-0-1"
+          },
+          "socket_cover": {
+            "score": 0.4901,
+            "crop": "g2-0-0"
+          },
+          "ram": {
+            "score": 0.1736,
+            "crop": "g3-1-2"
+          },
+          "nvme": {
+            "score": 0.3498,
+            "crop": "g2-1-1"
+          },
+          "none": {
+            "score": 0.3144,
+            "crop": "g3-0-2"
+          }
+        },
+        "ocr": "V2\n\n& SHOPGOODWILL,,,\n"
+      },
+      {
+        "image": 2,
+        "best": {
+          "intel_cooler": {
+            "score": 0.1161,
+            "crop": "g3-1-0"
+          },
+          "amd_cooler": {
+            "score": 0.1211,
+            "crop": "g3-1-0"
+          },
+          "tower_cooler": {
+            "score": 0.413,
+            "crop": "g2-1-0"
+          },
+          "cpu_visible": {
+            "score": 0.1046,
+            "crop": "g3-0-2"
+          },
+          "empty_socket": {
+            "score": 0.678,
+            "crop": "g3-1-2"
+          },
+          "socket_cover": {
+            "score": 0.3284,
+            "crop": "g2-0-0"
+          },
+          "ram": {
+            "score": 0.0532,
+            "crop": "g3-1-1"
+          },
+          "nvme": {
+            "score": 0.7746,
+            "crop": "g2-0-1"
+          },
+          "none": {
+            "score": 0.4097,
+            "crop": "g3-2-2"
+          }
+        },
+        "ocr": "&\\ SHOPGOODWILL,,,,\n"
+      },
+      {
+        "image": 3,
+        "best": {
+          "intel_cooler": {
+            "score": 0.1537,
+            "crop": "g3-1-0"
+          },
+          "amd_cooler": {
+            "score": 0.1371,
+            "crop": "g3-1-0"
+          },
+          "tower_cooler": {
+            "score": 0.2232,
+            "crop": "g3-1-0"
+          },
+          "cpu_visible": {
+            "score": 0.1171,
+            "crop": "g3-0-0"
+          },
+          "empty_socket": {
+            "score": 0.504,
+            "crop": "g3-2-1"
+          },
+          "socket_cover": {
+            "score": 0.474,
+            "crop": "g3-2-0"
+          },
+          "ram": {
+            "score": 0.1124,
+            "crop": "g3-2-2"
+          },
+          "nvme": {
+            "score": 0.4386,
+            "crop": "g3-2-2"
+          },
+          "none": {
+            "score": 0.2037,
+            "crop": "g3-1-1"
+          }
+        },
+        "ocr": "Salua5 SHUEY\n\nL/\n\n& SHOPGOODWILL,,,\n"
+      },
+      {
+        "image": 4,
+        "best": {
+          "intel_cooler": {
+            "score": 0.054,
+            "crop": "g3-1-2"
+          },
+          "amd_cooler": {
+            "score": 0.0474,
+            "crop": "g3-1-2"
+          },
+          "tower_cooler": {
+            "score": 0.0481,
+            "crop": "g3-1-2"
+          },
+          "cpu_visible": {
+            "score": 0.123,
+            "crop": "g3-2-2"
+          },
+          "empty_socket": {
+            "score": 0.4623,
+            "crop": "g3-2-2"
+          },
+          "socket_cover": {
+            "score": 0.7018,
+            "crop": "g3-2-1"
+          },
+          "ram": {
+            "score": 0.0417,
+            "crop": "g3-2-2"
+          },
+          "nvme": {
+            "score": 0.2194,
+            "crop": "g3-1-2"
+          },
+          "none": {
+            "score": 0.271,
+            "crop": "g3-1-2"
+          }
+        },
+        "ocr": "C)\n\n& SHOPGOODWILL,,,,\n"
+      },
+      {
+        "image": 5,
+        "best": {
+          "intel_cooler": {
+            "score": 0.0456,
+            "crop": "g3-1-2"
+          },
+          "amd_cooler": {
+            "score": 0.0138,
+            "crop": "g3-1-2"
+          },
+          "tower_cooler": {
+            "score": 0.035,
+            "crop": "g2-1-0"
+          },
+          "cpu_visible": {
+            "score": 0.1467,
+            "crop": "g3-0-1"
+          },
+          "empty_socket": {
+            "score": 0.4812,
+            "crop": "g3-0-0"
+          },
+          "socket_cover": {
+            "score": 0.6237,
+            "crop": "g3-2-0"
+          },
+          "ram": {
+            "score": 0.1072,
+            "crop": "g3-1-2"
+          },
+          "nvme": {
+            "score": 0.7133,
+            "crop": "full"
+          },
+          "none": {
+            "score": 0.3593,
+            "crop": "g3-2-2"
+          }
+        },
+        "ocr": "Lene PP\nFe Me Me FOP OFF SOF E RT SFE EDS HRS SS BSS SSDS 8 SSS Ss SoD\neid oe ew oe ee Se Se et 8 ts CECUCCCUCECCe eee eee\n\nRRR, =\n\nSN225100016614\n\ntf | MN Lt\n\n&& SHOPGOODWILL,,,,\n"
+      }
+    ]
+  },
+  {
+    "id": "272695485",
+    "title": "Msi B450 Tomahawk Max Gaming Motherboard Amd Socket Am4 Atx Ddr4 Hdmi Usb 3.2 | ShopGoodwill.com",
+    "cpu_state": "unclear",
+    "value_score": 25,
+    "maxima": {
+      "intel_cooler": 0.076,
+      "amd_cooler": 0.336,
+      "tower_cooler": 0.194,
+      "cpu_visible": 0.261,
+      "empty_socket": 0.447,
+      "socket_cover": 0.578,
+      "ram": 0.121,
+      "nvme": 0.831,
+      "none": 0.77
+    },
+    "images": [
+      {
+        "image": 1,
+        "best": {
+          "intel_cooler": {
+            "score": 0.0559,
+            "crop": "full"
+          },
+          "amd_cooler": {
+            "score": 0.2431,
+            "crop": "g3-0-1"
+          },
+          "tower_cooler": {
+            "score": 0.0669,
+            "crop": "g3-0-2"
+          },
+          "cpu_visible": {
+            "score": 0.2611,
+            "crop": "g2-1-0"
+          },
+          "empty_socket": {
+            "score": 0.3521,
+            "crop": "g3-2-0"
+          },
+          "socket_cover": {
+            "score": 0.2372,
+            "crop": "g3-1-0"
+          },
+          "ram": {
+            "score": 0.1207,
+            "crop": "g3-0-2"
+          },
+          "nvme": {
+            "score": 0.7284,
+            "crop": "g2-0-0"
+          },
+          "none": {
+            "score": 0.4772,
+            "crop": "g2-0-1"
+          }
+        },
+        "ocr": "- = xu\ncD amMvivwot\ne\n\nARO\n\n"
+      },
+      {
+        "image": 2,
+        "best": {
+          "intel_cooler": {
+            "score": 0.0567,
+            "crop": "g3-1-0"
+          },
+          "amd_cooler": {
+            "score": 0.044,
+            "crop": "full"
+          },
+          "tower_cooler": {
+            "score": 0.113,
+            "crop": "g3-1-0"
+          },
+          "cpu_visible": {
+            "score": 0.2202,
+            "crop": "g3-2-1"
+          },
+          "empty_socket": {
+            "score": 0.42,
+            "crop": "g3-2-2"
+          },
+          "socket_cover": {
+            "score": 0.3748,
+            "crop": "g3-0-1"
+          },
+          "ram": {
+            "score": 0.0444,
+            "crop": "g3-2-1"
+          },
+          "nvme": {
+            "score": 0.3485,
+            "crop": "g2-0-1"
+          },
+          "none": {
+            "score": 0.4289,
+            "crop": "g3-2-0"
+          }
+        },
+        "ocr": "\u2019 _\n\nbyl\n\nee @\n\n\u2014 xvw\n= IMVHVWOL\n\n\\\n\n\u2014 > \u00a7\n\n"
+      },
+      {
+        "image": 3,
+        "best": {
+          "intel_cooler": {
+            "score": 0.0311,
+            "crop": "g2-1-1"
+          },
+          "amd_cooler": {
+            "score": 0.0279,
+            "crop": "g3-2-1"
+          },
+          "tower_cooler": {
+            "score": 0.0404,
+            "crop": "g2-1-1"
+          },
+          "cpu_visible": {
+            "score": 0.1811,
+            "crop": "g3-1-2"
+          },
+          "empty_socket": {
+            "score": 0.447,
+            "crop": "g3-0-2"
+          },
+          "socket_cover": {
+            "score": 0.5779,
+            "crop": "g3-0-0"
+          },
+          "ram": {
+            "score": 0.0122,
+            "crop": "g3-1-2"
+          },
+          "nvme": {
+            "score": 0.0994,
+            "crop": "g3-2-1"
+          },
+          "none": {
+            "score": 0.3512,
+            "crop": "g2-1-0"
+          }
+        },
+        "ocr": "ZGIOCOOCGOI OS O53\n\npanna oocee ne\n\nGow we\n\n"
+      },
+      {
+        "image": 4,
+        "best": {
+          "intel_cooler": {
+            "score": 0.0538,
+            "crop": "g2-0-1"
+          },
+          "amd_cooler": {
+            "score": 0.3359,
+            "crop": "g3-0-2"
+          },
+          "tower_cooler": {
+            "score": 0.0692,
+            "crop": "g3-1-2"
+          },
+          "cpu_visible": {
+            "score": 0.2319,
+            "crop": "g3-0-0"
+          },
+          "empty_socket": {
+            "score": 0.2517,
+            "crop": "g3-1-2"
+          },
+          "socket_cover": {
+            "score": 0.0939,
+            "crop": "g3-1-0"
+          },
+          "ram": {
+            "score": 0.0749,
+            "crop": "g3-0-1"
+          },
+          "nvme": {
+            "score": 0.8079,
+            "crop": "full"
+          },
+          "none": {
+            "score": 0.77,
+            "crop": "g3-2-2"
+          }
+        },
+        "ocr": "TRUE GAMING\n\n2 CLIADR:\n"
+      },
+      {
+        "image": 5,
+        "best": {
+          "intel_cooler": {
+            "score": 0.0475,
+            "crop": "g3-0-1"
+          },
+          "amd_cooler": {
+            "score": 0.087,
+            "crop": "g2-0-1"
+          },
+          "tower_cooler": {
+            "score": 0.1936,
+            "crop": "g2-0-1"
+          },
+          "cpu_visible": {
+            "score": 0.2187,
+            "crop": "g3-0-1"
+          },
+          "empty_socket": {
+            "score": 0.14,
+            "crop": "g3-1-1"
+          },
+          "socket_cover": {
+            "score": 0.2181,
+            "crop": "g3-0-2"
+          },
+          "ram": {
+            "score": 0.096,
+            "crop": "g3-2-2"
+          },
+          "nvme": {
+            "score": 0.8307,
+            "crop": "g3-0-0"
+          },
+          "none": {
+            "score": 0.7461,
+            "crop": "g3-2-0"
+          }
+        },
+        "ocr": "Goodwill Columbus\n\n"
+      },
+      {
+        "image": 6,
+        "best": {
+          "intel_cooler": {
+            "score": 0.0761,
+            "crop": "g3-0-0"
+          },
+          "amd_cooler": {
+            "score": 0.2261,
+            "crop": "g3-0-1"
+          },
+          "tower_cooler": {
+            "score": 0.0938,
+            "crop": "g3-1-0"
+          },
+          "cpu_visible": {
+            "score": 0.0813,
+            "crop": "g3-1-1"
+          },
+          "empty_socket": {
+            "score": 0.4178,
+            "crop": "g3-1-1"
+          },
+          "socket_cover": {
+            "score": 0.197,
+            "crop": "g3-1-2"
+          },
+          "ram": {
+            "score": 0.1065,
+            "crop": "g3-0-0"
+          },
+          "nvme": {
+            "score": 0.4201,
+            "crop": "g2-1-0"
+          },
+          "none": {
+            "score": 0.7462,
+            "crop": "g3-2-1"
+          }
+        },
+        "ocr": "| &2 DEBUG LED\n\n| Easy troubleshooting took\n\noa\n\nTURBO mz\nDelivering speeds upto 320b/s per device using Gerd xk\n\n[eal a\nmysSTIC LIGHT\n\n[RGB LED ambient lights are added to give it an awesome\nook & teel, ready for battle\n\nSereiy use a USB hey to flash any BIOS within seconds,\n|CPU, memory or graphic"
+      }
+    ]
+  },
+  {
+    "id": "272494280",
+    "title": "Asrock B450 Steel Legend Am4 Atx Motherboard Ddr4 Pcie Hdmi Displayport | ShopGoodwill.com",
+    "cpu_state": "unclear",
+    "value_score": 25,
+    "maxima": {
+      "intel_cooler": 0.19,
+      "amd_cooler": 0.264,
+      "tower_cooler": 0.211,
+      "cpu_visible": 0.525,
+      "empty_socket": 0.514,
+      "socket_cover": 0.518,
+      "ram": 0.24,
+      "nvme": 0.787,
+      "none": 0.574
+    },
+    "images": [
+      {
+        "image": 1,
+        "best": {
+          "intel_cooler": {
+            "score": 0.0763,
+            "crop": "g3-1-1"
+          },
+          "amd_cooler": {
+            "score": 0.173,
+            "crop": "g3-1-1"
+          },
+          "tower_cooler": {
+            "score": 0.2015,
+            "crop": "g3-0-1"
+          },
+          "cpu_visible": {
+            "score": 0.3008,
+            "crop": "g3-1-2"
+          },
+          "empty_socket": {
+            "score": 0.3687,
+            "crop": "g2-1-0"
+          },
+          "socket_cover": {
+            "score": 0.2501,
+            "crop": "g3-2-2"
+          },
+          "ram": {
+            "score": 0.037,
+            "crop": "g2-0-1"
+          },
+          "nvme": {
+            "score": 0.7707,
+            "crop": "g3-0-2"
+          },
+          "none": {
+            "score": 0.5738,
+            "crop": "g3-1-0"
+          }
+        },
+        "ocr": "INADA VAILS\n\n&&\\ SHOPGOODWILL,,,,\n"
+      },
+      {
+        "image": 2,
+        "best": {
+          "intel_cooler": {
+            "score": 0.1898,
+            "crop": "g3-0-0"
+          },
+          "amd_cooler": {
+            "score": 0.2641,
+            "crop": "g3-0-0"
+          },
+          "tower_cooler": {
+            "score": 0.2111,
+            "crop": "g3-0-0"
+          },
+          "cpu_visible": {
+            "score": 0.3483,
+            "crop": "g3-1-1"
+          },
+          "empty_socket": {
+            "score": 0.5145,
+            "crop": "g3-0-1"
+          },
+          "socket_cover": {
+            "score": 0.1439,
+            "crop": "g2-0-1"
+          },
+          "ram": {
+            "score": 0.0446,
+            "crop": "g3-1-1"
+          },
+          "nvme": {
+            "score": 0.3248,
+            "crop": "g2-1-1"
+          },
+          "none": {
+            "score": 0.3684,
+            "crop": "g3-2-2"
+          }
+        },
+        "ocr": "i SHOPGOODWILL,,,,\n"
+      },
+      {
+        "image": 3,
+        "best": {
+          "intel_cooler": {
+            "score": 0.0692,
+            "crop": "g3-1-1"
+          },
+          "amd_cooler": {
+            "score": 0.0874,
+            "crop": "g3-1-1"
+          },
+          "tower_cooler": {
+            "score": 0.1345,
+            "crop": "g2-0-0"
+          },
+          "cpu_visible": {
+            "score": 0.2463,
+            "crop": "g3-1-1"
+          },
+          "empty_socket": {
+            "score": 0.5066,
+            "crop": "g2-1-1"
+          },
+          "socket_cover": {
+            "score": 0.2715,
+            "crop": "g3-0-2"
+          },
+          "ram": {
+            "score": 0.0507,
+            "crop": "g3-1-1"
+          },
+          "nvme": {
+            "score": 0.3694,
+            "crop": "g3-1-2"
+          },
+          "none": {
+            "score": 0.5006,
+            "crop": "g3-1-0"
+          }
+        },
+        "ocr": "a es\n\n\u2018a p= ee weeny\n\n&&\\ SHOPGOODWILL,,,,\n"
+      },
+      {
+        "image": 4,
+        "best": {
+          "intel_cooler": {
+            "score": 0.0506,
+            "crop": "g2-1-1"
+          },
+          "amd_cooler": {
+            "score": 0.0245,
+            "crop": "full"
+          },
+          "tower_cooler": {
+            "score": 0.0561,
+            "crop": "full"
+          },
+          "cpu_visible": {
+            "score": 0.153,
+            "crop": "g3-1-2"
+          },
+          "empty_socket": {
+            "score": 0.4495,
+            "crop": "g3-0-1"
+          },
+          "socket_cover": {
+            "score": 0.5179,
+            "crop": "g3-0-0"
+          },
+          "ram": {
+            "score": 0.0759,
+            "crop": "g3-2-2"
+          },
+          "nvme": {
+            "score": 0.2552,
+            "crop": "g3-2-2"
+          },
+          "none": {
+            "score": 0.2184,
+            "crop": "g3-1-1"
+          }
+        },
+        "ocr": "\u00b0\nS\n\u00b0\n2\nS)\n\u00b0\n7\n\u00b0\n\u00b0\n\u00b0\nS)\n\u00b0\n\nweeeeseesess\n\non Sesser ed &\n\nan\nal\n\n& SHOPGOODWILL,,,,\n"
+      },
+      {
+        "image": 5,
+        "best": {
+          "intel_cooler": {
+            "score": 0.0817,
+            "crop": "g3-0-1"
+          },
+          "amd_cooler": {
+            "score": 0.0814,
+            "crop": "g3-2-0"
+          },
+          "tower_cooler": {
+            "score": 0.088,
+            "crop": "g3-2-0"
+          },
+          "cpu_visible": {
+            "score": 0.229,
+            "crop": "g3-1-0"
+          },
+          "empty_socket": {
+            "score": 0.4001,
+            "crop": "g3-2-2"
+          },
+          "socket_cover": {
+            "score": 0.1801,
+            "crop": "g3-2-1"
+          },
+          "ram": {
+            "score": 0.2079,
+            "crop": "g3-1-1"
+          },
+          "nvme": {
+            "score": 0.7873,
+            "crop": "g2-0-0"
+          },
+          "none": {
+            "score": 0.4515,
+            "crop": "g3-0-2"
+          }
+        },
+        "ocr": "i SHOPGOODWILL,,,,\n"
+      },
+      {
+        "image": 6,
+        "best": {
+          "intel_cooler": {
+            "score": 0.0969,
+            "crop": "g2-0-0"
+          },
+          "amd_cooler": {
+            "score": 0.1034,
+            "crop": "full"
+          },
+          "tower_cooler": {
+            "score": 0.1304,
+            "crop": "g3-1-0"
+          },
+          "cpu_visible": {
+            "score": 0.5254,
+            "crop": "g3-0-1"
+          },
+          "empty_socket": {
+            "score": 0.2944,
+            "crop": "g3-0-0"
+          },
+          "socket_cover": {
+            "score": 0.4108,
+            "crop": "g3-2-0"
+          },
+          "ram": {
+            "score": 0.2401,
+            "crop": "g3-1-1"
+          },
+          "nvme": {
+            "score": 0.4109,
+            "crop": "full"
+          },
+          "none": {
+            "score": 0.4064,
+            "crop": "g3-2-1"
+          }
+        },
+        "ocr": "-_\n\nSS\naa\n\nSTEEL LEGEND\n\n4\na\n\nMSRock\n\n"
+      }
+    ]
+  },
+  {
+    "id": "272495610",
+    "title": "Gigabyte B450 Aorus M Micro-atx Am4 Motherboard Ddr4 Pcie M.2 Sata Usb Hdmi | ShopGoodwill.com",
+    "cpu_state": "empty_socket_likely",
+    "value_score": -75,
+    "maxima": {
+      "intel_cooler": 0.081,
+      "amd_cooler": 0.079,
+      "tower_cooler": 0.435,
+      "cpu_visible": 0.573,
+      "empty_socket": 0.673,
+      "socket_cover": 0.399,
+      "ram": 0.111,
+      "nvme": 0.66,
+      "none": 0.529
+    },
+    "images": [
+      {
+        "image": 1,
+        "best": {
+          "intel_cooler": {
+            "score": 0.0803,
+            "crop": "g3-0-0"
+          },
+          "amd_cooler": {
+            "score": 0.0682,
+            "crop": "full"
+          },
+          "tower_cooler": {
+            "score": 0.2679,
+            "crop": "g3-0-0"
+          },
+          "cpu_visible": {
+            "score": 0.3036,
+            "crop": "g3-1-2"
+          },
+          "empty_socket": {
+            "score": 0.5402,
+            "crop": "g3-2-0"
+          },
+          "socket_cover": {
+            "score": 0.2438,
+            "crop": "g3-1-2"
+          },
+          "ram": {
+            "score": 0.0886,
+            "crop": "g2-1-0"
+          },
+          "nvme": {
+            "score": 0.3502,
+            "crop": "g3-2-2"
+          },
+          "none": {
+            "score": 0.529,
+            "crop": "g3-1-0"
+          }
+        },
+        "ocr": "EEE geagggnestae\nainainige di\n\n"
+      },
+      {
+        "image": 2,
+        "best": {
+          "intel_cooler": {
+            "score": 0.0316,
+            "crop": "g3-0-1"
+          },
+          "amd_cooler": {
+            "score": 0.0711,
+            "crop": "g3-1-1"
+          },
+          "tower_cooler": {
+            "score": 0.1181,
+            "crop": "g3-1-1"
+          },
+          "cpu_visible": {
+            "score": 0.4286,
+            "crop": "g2-0-0"
+          },
+          "empty_socket": {
+            "score": 0.2897,
+            "crop": "g3-2-0"
+          },
+          "socket_cover": {
+            "score": 0.3993,
+            "crop": "g3-1-2"
+          },
+          "ram": {
+            "score": 0.1059,
+            "crop": "g3-2-2"
+          },
+          "nvme": {
+            "score": 0.6603,
+            "crop": "g3-0-1"
+          },
+          "none": {
+            "score": 0.1261,
+            "crop": "g3-2-2"
+          }
+        },
+        "ocr": "F_PANEL[ao=Eerset=a\n\nfi\n\n1\n"
+      },
+      {
+        "image": 3,
+        "best": {
+          "intel_cooler": {
+            "score": 0.0814,
+            "crop": "g3-2-0"
+          },
+          "amd_cooler": {
+            "score": 0.0519,
+            "crop": "g3-2-0"
+          },
+          "tower_cooler": {
+            "score": 0.2913,
+            "crop": "g3-2-0"
+          },
+          "cpu_visible": {
+            "score": 0.5733,
+            "crop": "g3-2-2"
+          },
+          "empty_socket": {
+            "score": 0.5231,
+            "crop": "g2-1-1"
+          },
+          "socket_cover": {
+            "score": 0.2015,
+            "crop": "g3-0-2"
+          },
+          "ram": {
+            "score": 0.1109,
+            "crop": "g3-0-1"
+          },
+          "nvme": {
+            "score": 0.3652,
+            "crop": "g3-0-1"
+          },
+          "none": {
+            "score": 0.3054,
+            "crop": "g3-2-0"
+          }
+        },
+        "ocr": "qyrenie siti\nseries he\n\nuf\n\\\n\nY\n\nipe\n\nDesigned In Ta\n\n"
+      },
+      {
+        "image": 4,
+        "best": {
+          "intel_cooler": {
+            "score": 0.0434,
+            "crop": "g3-1-1"
+          },
+          "amd_cooler": {
+            "score": 0.0546,
+            "crop": "g3-1-1"
+          },
+          "tower_cooler": {
+            "score": 0.4353,
+            "crop": "g3-1-1"
+          },
+          "cpu_visible": {
+            "score": 0.4229,
+            "crop": "g3-1-2"
+          },
+          "empty_socket": {
+            "score": 0.6217,
+            "crop": "g2-0-1"
+          },
+          "socket_cover": {
+            "score": 0.2874,
+            "crop": "g3-2-0"
+          },
+          "ram": {
+            "score": 0.1047,
+            "crop": "g2-1-1"
+          },
+          "nvme": {
+            "score": 0.293,
+            "crop": "g2-1-1"
+          },
+          "none": {
+            "score": 0.2715,
+            "crop": "g3-1-0"
+          }
+        },
+        "ocr": "ad.\nPASPRLABEAL PES EEDISY\n\niecommanociniceaini\n\nacorn iM\n\nTaipei\n\nign\n\n"
+      },
+      {
+        "image": 5,
+        "best": {
+          "intel_cooler": {
+            "score": 0.0742,
+            "crop": "g2-1-0"
+          },
+          "amd_cooler": {
+            "score": 0.0785,
+            "crop": "g3-2-1"
+          },
+          "tower_cooler": {
+            "score": 0.1546,
+            "crop": "g3-2-0"
+          },
+          "cpu_visible": {
+            "score": 0.2557,
+            "crop": "g3-0-1"
+          },
+          "empty_socket": {
+            "score": 0.4684,
+            "crop": "g2-1-1"
+          },
+          "socket_cover": {
+            "score": 0.2514,
+            "crop": "g3-1-2"
+          },
+          "ram": {
+            "score": 0.087,
+            "crop": "g3-1-0"
+          },
+          "nvme": {
+            "score": 0.4367,
+            "crop": "g3-1-0"
+          },
+          "none": {
+            "score": 0.4744,
+            "crop": "g3-2-2"
+          }
+        },
+        "ocr": "\u2014\u2014\u2014\u2014\n\nPree ere ee\nrrerrerere\n\n"
+      },
+      {
+        "image": 6,
+        "best": {
+          "intel_cooler": {
+            "score": 0.0458,
+            "crop": "g2-1-1"
+          },
+          "amd_cooler": {
+            "score": 0.0167,
+            "crop": "full"
+          },
+          "tower_cooler": {
+            "score": 0.0917,
+            "crop": "g2-0-1"
+          },
+          "cpu_visible": {
+            "score": 0.2095,
+            "crop": "g2-1-1"
+          },
+          "empty_socket": {
+            "score": 0.6733,
+            "crop": "g3-1-1"
+          },
+          "socket_cover": {
+            "score": 0.3309,
+            "crop": "g3-1-2"
+          },
+          "ram": {
+            "score": 0.0299,
+            "crop": "g3-1-0"
+          },
+          "nvme": {
+            "score": 0.0579,
+            "crop": "g3-1-0"
+          },
+          "none": {
+            "score": 0.4703,
+            "crop": "g3-2-2"
+          }
+        },
+        "ocr": "Y\n\nMy iy hi\nery) \u2018\n\n"
+      }
+    ]
+  }
+]
