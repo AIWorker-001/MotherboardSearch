@@ -350,3 +350,27 @@ The operational finalizer can also be rerun independently:
 ```bash
 python3 src/phase8_finalize.py --output-dir output
 ```
+
+## Phase 9 distributed multi-worker processing
+
+Phase 9 makes the expensive detection stage portable across an AIWorker pool. Pending listings are assigned to deterministic shards using a stable hash of the ShopGoodwill item ID. Stable assignment prevents unnecessary movement between workers when the same shard count is reused.
+
+The distributed state ledger supports claiming, completion, bounded retries, stale-assignment recovery, and per-shard result locations. `distributed_plan.py` generates portable command arrays that AIWorkbench can submit to available workers. `merge_shards.py` validates that each item appears exactly once before producing the combined detector report.
+
+```bash
+python3 src/shard_work.py \
+  --items output/pending_listings.json \
+  --shards 4 \
+  --output-dir output/distributed/<run>/inputs
+
+python3 src/distributed_plan.py \
+  --manifest output/distributed/<run>/inputs/manifest.json \
+  --run-id <run> \
+  --output output/distributed/<run>/plan.json
+
+python3 src/distributed_state.py init \
+  --run-id <run> \
+  --manifest output/distributed/<run>/inputs/manifest.json
+```
+
+Each AIWorker runs `src/process_shard.py` for its claimed shard. Completed `results.json` files are merged with `src/merge_shards.py`. The implementation is coordinator-neutral: AIWorkbench may dispatch the plan across one or many workers without changing the detector code.

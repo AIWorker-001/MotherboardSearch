@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "enabled": true,
+  "default_shards": 4,
+  "maximum_shards": 32,
+  "retry_limit": 2,
+  "assignment": "stable_hash",
+  "state_file": "data/distributed/state.json",
+  "result_dir": "output/distributed",
+  "stale_after_minutes": 60
+}
