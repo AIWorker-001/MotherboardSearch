@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "run_history": "data/runs/history.json",
+  "retention_days": 30,
+  "report": {
+    "top_bid_candidates": 20,
+    "top_review_candidates": 20,
+    "output_html": "reports/daily.html",
+    "output_json": "reports/daily.json"
+  },
+  "alerts": {
+    "minimum_expected_profit": 75.0,
+    "minimum_confidence": 0.75,
+    "maximum_recommended_bid": 300.0,
+    "include_drift": true,
+    "include_crawler_failures": true
+  },
+  "health": {
+    "maximum_search_errors": 3,
+    "maximum_gallery_error_rate": 0.20,
+    "maximum_image_error_rate": 0.15,
+    "maximum_review_rate": 0.60
+  }
+}

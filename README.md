@@ -331,3 +331,22 @@ python3 src/continual_promotion.py --candidate <name> --comparison models/runs/<
 ```
 
 Configuration and persistent state are stored in `config/continual_learning.json` and `data/continual/state.json`. This creates a repeatable active-learning cycle without allowing a newly trained model to silently replace production inference.
+
+## Phase 8 daily operations, health, alerts, and reporting
+
+Phase 8 turns the pipeline into a repeatable daily operational service. Each completed run is evaluated against crawler, gallery, image-download, review-rate, and model-drift limits. A compact 30-day run history is maintained, and the results are rendered as both machine-readable JSON and a standalone HTML report.
+
+The report includes top bid candidates, top review candidates, expected profit, maximum bid, confidence, operational health, crawler warnings, and model-drift alerts. Alert thresholds and report limits are configured in `config/operations.json`.
+
+Normal `daily_run.py` execution now invokes Phase 8 automatically. It writes:
+
+- `output/operations_health.json`
+- `reports/daily.json`
+- `reports/daily.html`
+- `data/runs/history.json`
+
+The operational finalizer can also be rerun independently:
+
+```bash
+python3 src/phase8_finalize.py --output-dir output
+```

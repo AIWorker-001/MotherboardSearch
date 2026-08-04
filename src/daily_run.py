@@ -26,6 +26,9 @@ DETECTOR_FILES = [
     ROOT / "src" / "model_integrity.py",
     ROOT / "src" / "inference_monitor.py",
     ROOT / "config" / "deployment.json",
+    ROOT / "src" / "operations_health.py",
+    ROOT / "src" / "daily_report.py",
+    ROOT / "config" / "operations.json",
 ]
 
 
@@ -220,6 +223,11 @@ def main() -> int:
         "state": str(args.state),
     }
     run_report.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
+    run([
+        sys.executable, "src/phase8_finalize.py",
+        "--output-dir", str(output),
+        "--config", str(ROOT / "config" / "operations.json"),
+    ])
     print(json.dumps(report))
     return 0
 
