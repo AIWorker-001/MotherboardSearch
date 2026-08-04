@@ -55,7 +55,19 @@ async function collectOne(context, id, options) {
     );
     const urls = [...new Set(styles.map(extractUrl).filter(Boolean))];
     if (!urls.length) throw new Error('gallery_loaded_without_images');
-    return { id, title, urls, attempts: navigation.attempt, fetched_at: new Date().toISOString() };
+    const detailText = await page.locator('body').innerText({ timeout: 10000 }).catch(() => '');
+    const description = await page.locator('[class*="description"], [id*="description"]').first().innerText({ timeout: 3000 }).catch(() => '');
+    const structuredDetails = await page.locator('table, dl').evaluateAll(elements => elements.map(element => (element.innerText || '').trim()).filter(Boolean)).catch(() => []);
+    return {
+      id,
+      title,
+      urls,
+      description: description.slice(0, 8000),
+      structured_details: structuredDetails.slice(0, 10),
+      detail_text: detailText.slice(0, 12000),
+      attempts: navigation.attempt,
+      fetched_at: new Date().toISOString(),
+    };
   } finally {
     await page.close();
   }

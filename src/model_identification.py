@@ -10,11 +10,9 @@ from difflib import SequenceMatcher
 from pathlib import Path
 from typing import Iterable
 
-from PIL import Image
-
 BOARD_PATTERNS = [
-    re.compile(r"\b(?:ASUS|MSI|GIGABYTE|ASROCK|EVGA)\b[^\n]{0,80}?\b(?:Z|B|H|X|A)[0-9]{3}[A-Z0-9-]*\b[^\n]{0,60}", re.I),
-    re.compile(r"\b(?:MAXIMUS|STRIX|AORUS|TOMAHAWK|GAMING|DESIGNARE|STEEL LEGEND|TAICHI)\b[^\n]{0,80}", re.I),
+    re.compile(r"\b(?:ASUS|MSI|GIGABYTE|ASROCK|EVGA|SUPERMICRO|BIOSTAR|INTEL)\b[^\n]{0,100}?\b(?:Z|B|H|X|A|Q|C|W)[0-9]{2,3}[A-Z0-9-]*\b[^\n]{0,80}", re.I),
+    re.compile(r"\b(?:MAXIMUS|STRIX|AORUS|TOMAHAWK|MORTAR|GAMING|DESIGNARE|STEEL LEGEND|TAICHI|PRIME|PROART)\b[^\n]{0,100}", re.I),
 ]
 CPU_PATTERNS = [
     re.compile(r"\bINTEL\s+(?:CORE\s+)?I[3579][ -]?[0-9]{4,5}[A-Z]{0,2}\b", re.I),
@@ -28,6 +26,8 @@ class Identification:
     text: str
     confidence: float
     source: str
+    stated_text: str | None = None
+    confirmation: str | None = None
 
 
 def normalize_text(value: str) -> str:
@@ -62,44 +62,148 @@ def best_catalog_match(candidate: str, catalog_keys: Iterable[str]) -> tuple[str
     normalized = normalize_text(candidate)
     best_key, best_score = None, 0.0
     for key in catalog_keys:
-        score = SequenceMatcher(None, normalized, normalize_text(key)).ratio()
-        if normalize_text(key) in normalized or normalized in normalize_text(key):
+        canonical = normalize_text(key)
+        score = SequenceMatcher(None, normalized, canonical).ratio()
+        if canonical in normalized or normalized in canonical:
             score = max(score, 0.92)
         if score > best_score:
             best_key, best_score = key, score
     return best_key, best_score
 
 
-def identify_item(item: dict, catalog: dict, image_paths: list[Path]) -> dict:
-    texts = [str(item.get("title", "")), str(item.get("card", ""))]
-    for image_path in image_paths:
-        texts.append(run_ocr(image_path))
-    combined = "\n".join(texts)
-    board_candidates = extract_candidates(combined, BOARD_PATTERNS)
-    cpu_candidates = extract_candidates(combined, CPU_PATTERNS)
+def best_candidate_match(candidates: list[str], catalog_keys: Iterable[str]) -> tuple[str | None, float, str | None]:
+    best_key, best_score, best_candidate = None, 0.0, None
+    for candidate in candidates:
+        key, score = best_catalog_match(candidate, catalog_keys)
+        if key and score > best_score:
+            best_key, best_score, best_candidate = key, score, candidate
+    return best_key, best_score, best_candidate
 
-    board_match = None
-    for candidate in board_candidates:
-        key, score = best_catalog_match(candidate, catalog.get("motherboards", {}).keys())
-        if key and (board_match is None or score > board_match.confidence):
-            board_match = Identification(key, round(score, 4), "title_or_ocr")
-    cpu_match = None
-    for candidate in cpu_candidates:
-        key, score = best_catalog_match(candidate, catalog.get("cpus", {}).keys())
-        if key and (cpu_match is None or score > cpu_match.confidence):
-            cpu_match = Identification(key, round(score, 4), "title_or_ocr")
+
+
+
+def structured_model_tokens(value: str) -> dict[str, str | None]:
+    normalized = normalize_text(value)
+    manufacturer = next((name for name in ("ASUS", "MSI", "GIGABYTE", "ASROCK", "EVGA", "SUPERMICRO", "BIOSTAR", "INTEL") if name in normalized.split()), None)
+    chipset_match = re.search(r"\b([ZBHXAQCW][0-9]{2,3})\b", normalized)
+    suffix_match = re.search(r"\b([ZBHXAQCW][0-9]{2,3})[- ]?([A-Z0-9]+)\b", normalized)
+    family_tokens = [token for token in normalized.split() if token in {"PRIME", "MAXIMUS", "STRIX", "AORUS", "TOMAHAWK", "MORTAR", "GAMING", "DESIGNARE", "TAICHI", "PROART"}]
+    return {
+        "manufacturer": manufacturer,
+        "chipset": chipset_match.group(1) if chipset_match else None,
+        "suffix": suffix_match.group(2) if suffix_match and suffix_match.group(2) != (chipset_match.group(1) if chipset_match else None) else None,
+        "family": family_tokens[0] if family_tokens else None,
+        "normalized": normalized,
+    }
+
+
+def exact_model_conflict(left: str | None, right: str | None) -> bool:
+    if not left or not right:
+        return False
+    a, b = structured_model_tokens(left), structured_model_tokens(right)
+    for key in ("manufacturer", "chipset", "family"):
+        if a[key] and b[key] and a[key] != b[key]:
+            return True
+    if a["suffix"] and b["suffix"] and a["suffix"] != b["suffix"]:
+        return True
+    return False
+
+def candidate_agreement(left: str | None, right: str | None) -> float:
+    if not left or not right:
+        return 0.0
+    a, b = normalize_text(left), normalize_text(right)
+    if a == b:
+        return 1.0
+    if a in b or b in a:
+        return 0.95
+    return SequenceMatcher(None, a, b).ratio()
+
+
+def listing_text(item: dict) -> str:
+    gallery = item.get("gallery") or {}
+    structured = gallery.get("structured_details", [])
+    return "\n".join([
+        str(item.get("title", "")),
+        str(item.get("card", "")),
+        str(gallery.get("title", "")),
+        str(gallery.get("description", "")),
+        "\n".join(str(value) for value in structured),
+        str(gallery.get("detail_text", "")),
+    ])
+
+
+def resolve_identification(
+    listing_candidates: list[str],
+    visual_candidates: list[str],
+    catalog_keys: Iterable[str],
+) -> tuple[Identification | None, dict]:
+    catalog_keys = list(catalog_keys)
+    listing_key, listing_score, listing_raw = best_candidate_match(listing_candidates, catalog_keys)
+    visual_key, visual_score, visual_raw = best_candidate_match(visual_candidates, catalog_keys)
+    if listing_raw and (listing_key is None or listing_score < 0.60):
+        listing_key = None
+    if visual_raw and (visual_key is None or visual_score < 0.60):
+        visual_key = None
+    agreement = candidate_agreement(listing_key or listing_raw, visual_key or visual_raw)
+    model_conflict = exact_model_conflict(listing_key or listing_raw, visual_key or visual_raw)
+
+    audit = {
+        "listing_candidate": listing_raw,
+        "listing_catalog_match": listing_key,
+        "listing_match_score": round(listing_score, 4),
+        "visual_candidate": visual_raw,
+        "visual_catalog_match": visual_key,
+        "visual_match_score": round(visual_score, 4),
+        "agreement": round(agreement, 4),
+        "exact_model_conflict": model_conflict,
+    }
+
+    if listing_key and listing_score >= 0.82:
+        if visual_key and visual_score >= 0.75:
+            if not model_conflict and agreement >= 0.82:
+                confidence = min(0.995, 0.88 + 0.08 * listing_score + 0.04 * visual_score)
+                return Identification(listing_key, round(confidence, 4), "listing_confirmed", listing_raw, "visual_agreement"), audit
+            return Identification(listing_key, round(min(0.90, listing_score), 4), "listing_conflict", listing_raw, "visual_conflict"), audit
+        return Identification(listing_key, round(min(0.94, 0.82 + 0.12 * listing_score), 4), "listing_probable", listing_raw, "not_visually_confirmed"), audit
+
+    if listing_raw and not listing_key:
+        if visual_key and visual_score >= 0.82:
+            return Identification(visual_key, round(min(0.94, visual_score), 4), "visually_identified", listing_raw, "listing_uncatalogued_or_incomplete"), audit
+        return Identification(listing_raw, 0.72, "listing_uncatalogued", listing_raw, "catalog_missing"), audit
+
+    if visual_key and visual_score >= 0.82:
+        return Identification(visual_key, round(min(0.94, visual_score), 4), "visually_identified", None, "listing_missing_model"), audit
+    return None, audit
+
+
+def identify_item(item: dict, catalog: dict, image_paths: list[Path]) -> dict:
+    seller_text = listing_text(item)
+    ocr_texts = [run_ocr(image_path) for image_path in image_paths]
+    visual_text = "\n".join(ocr_texts)
+
+    listing_board_candidates = extract_candidates(seller_text, BOARD_PATTERNS)
+    visual_board_candidates = extract_candidates(visual_text, BOARD_PATTERNS)
+    listing_cpu_candidates = extract_candidates(seller_text, CPU_PATTERNS)
+    visual_cpu_candidates = extract_candidates(visual_text, CPU_PATTERNS)
+
+    board, board_audit = resolve_identification(listing_board_candidates, visual_board_candidates, catalog.get("motherboards", {}).keys())
+    cpu, cpu_audit = resolve_identification(listing_cpu_candidates, visual_cpu_candidates, catalog.get("cpus", {}).keys())
 
     return {
         "item_id": str(item["id"]),
-        "motherboard": asdict(board_match) if board_match else None,
-        "cpu": asdict(cpu_match) if cpu_match else None,
-        "board_candidates": board_candidates,
-        "cpu_candidates": cpu_candidates,
+        "motherboard": asdict(board) if board else None,
+        "cpu": asdict(cpu) if cpu else None,
+        "listing_board_candidates": listing_board_candidates,
+        "visual_board_candidates": visual_board_candidates,
+        "listing_cpu_candidates": listing_cpu_candidates,
+        "visual_cpu_candidates": visual_cpu_candidates,
+        "motherboard_audit": board_audit,
+        "cpu_audit": cpu_audit,
     }
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Identify motherboard and CPU models from titles and cached images")
+    parser = argparse.ArgumentParser(description="Prioritize seller-stated models, then confirm with OCR or identify visually")
     parser.add_argument("--listings", type=Path, required=True)
     parser.add_argument("--cache-dir", type=Path, required=True)
     parser.add_argument("--catalog", type=Path, default=Path("config/market_values.json"))
@@ -114,7 +218,12 @@ def main() -> int:
         output.append(identify_item(item, catalog, images))
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(output, indent=2) + "\n", encoding="utf-8")
-    print(json.dumps({"items": len(output), "identified_boards": sum(bool(x["motherboard"]) for x in output), "identified_cpus": sum(bool(x["cpu"]) for x in output)}))
+    print(json.dumps({
+        "items": len(output),
+        "identified_boards": sum(bool(x["motherboard"]) for x in output),
+        "listing_confirmed": sum(x.get("motherboard", {}).get("source") == "listing_confirmed" for x in output if x.get("motherboard")),
+        "listing_conflicts": sum(x.get("motherboard", {}).get("source") == "listing_conflict" for x in output if x.get("motherboard")),
+    }))
     return 0
 
 

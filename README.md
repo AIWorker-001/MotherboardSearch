@@ -396,3 +396,23 @@ python3 src/daily_run.py --distributed local --distributed-shards 4 --distribute
 ```
 
 This is the final numbered infrastructure phase currently defined. Further work should be driven by real daily runs, labeled data, detector accuracy, and observed operational failures rather than adding phases speculatively.
+
+## Detection accuracy improvements
+
+The Phase 2 detector now uses multi-scale tiling, geometry validation, and cross-image evidence fusion. Large listing photos are evaluated both as full images and overlapping high-resolution tiles, improving recognition of small CPUs, socket pins, RAM, and NVMe devices. Implausibly tiny or oversized detections are discarded before fusion.
+
+Evidence is fused by class across distinct listing photos rather than taking only the single highest score. Moderate detections can become actionable when corroborated in multiple images, while contradictory installed-CPU and empty-socket evidence is routed to review. Damage findings require corroboration across multiple photos by default, substantially reducing false bent-pin and burn-damage alarms caused by reflections or compression artifacts.
+
+Thresholds and fusion policy are versioned in `config/detection_fusion.json`, so changes automatically trigger reprocessing of active listings.
+
+## Listing-first motherboard identification
+
+Motherboard identification now treats the seller's stated model as the primary candidate. The crawler stores detail-page title, description, structured details, and bounded page text. Model identification keeps seller text separate from image OCR and reports one of these sources:
+
+- `listing_confirmed`: seller model agrees with visual OCR
+- `listing_probable`: seller model is usable but not visually confirmed
+- `listing_conflict`: seller model conflicts with visual evidence and requires review
+- `listing_uncatalogued`: seller supplied a plausible model absent from the price catalog; it is preserved rather than forced to a wrong catalog entry
+- `visually_identified`: no usable seller model, so OCR supplied the model
+
+The output includes an audit record with both candidates, catalog matches, match scores, and agreement. This makes direct comparison against human review possible.

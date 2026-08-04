@@ -15,6 +15,8 @@ DETECTOR_FILES = [
     ROOT / "src" / "object_detector.py",
     ROOT / "src" / "phase2_detector.py",
     ROOT / "config" / "detection_classes.json",
+    ROOT / "config" / "detection_fusion.json",
+    ROOT / "src" / "detection_fusion.py",
     ROOT / "src" / "value_engine.py",
     ROOT / "config" / "value_model.json",
     ROOT / "src" / "model_identification.py",

@@ -1,0 +1,43 @@
+from PIL import Image
+
+from src.detection_fusion import fused_decision, generate_tiles, geometry_filter
+from src.object_detector import Detection
+
+
+def d(label, score, image_index=1, box=(10,10,210,210)):
+    return Detection(label, score, box, label, image_index)
+
+
+def test_multi_image_corroboration_promotes_moderate_cpu_evidence():
+    result = fused_decision([d('cpu_installed', 0.49, 1), d('cpu_installed', 0.48, 2)], {
+        'additional_image_weight':0.35,'corroboration_bonus':0.08,'strong_threshold':0.58,'moderate_threshold':0.46,'conflict_margin':0.10,'minimum_distinct_images_for_damage':2
+    })
+    assert result['cpu_state'] == 'visible_cpu_likely'
+    assert result['evidence']['cpu_installed']['distinct_images'] == 2
+
+
+def test_conflicting_installed_and_empty_routes_to_review():
+    result = fused_decision([d('cpu_installed', 0.62, 1), d('empty_lga_socket', 0.60, 2)], {
+        'additional_image_weight':0.35,'corroboration_bonus':0.08,'strong_threshold':0.58,'moderate_threshold':0.46,'conflict_margin':0.10,'minimum_distinct_images_for_damage':2
+    })
+    assert result['cpu_state'] == 'unclear'
+    assert 'conflicting_socket_evidence' in result['review_reasons']
+
+
+def test_damage_requires_two_images():
+    config={'additional_image_weight':0.35,'corroboration_bonus':0.08,'strong_threshold':0.58,'moderate_threshold':0.46,'conflict_margin':0.10,'minimum_distinct_images_for_damage':2}
+    one=fused_decision([d('bent_socket_pins',0.9,1)],config)
+    two=fused_decision([d('bent_socket_pins',0.7,1),d('bent_socket_pins',0.7,2)],config)
+    assert 'possible_physical_damage' not in one['review_reasons']
+    assert 'possible_physical_damage' in two['review_reasons']
+
+
+def test_tiling_and_geometry_filter():
+    image=Image.new('RGB',(1600,1200))
+    tiles=generate_tiles(image,768,0.2)
+    assert len(tiles)>2
+    config={'minimum_area_ratio':0.001,'maximum_area_ratio':0.65,'socket_minimum_area_ratio':0.002,'cooler_minimum_area_ratio':0.01}
+    tiny=d('cpu_installed',0.9,1,(0,0,10,10))
+    normal=d('cpu_installed',0.8,1,(0,0,200,200))
+    kept=geometry_filter([tiny,normal],image.size,config)
+    assert tiny not in kept and normal in kept

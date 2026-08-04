@@ -9,8 +9,12 @@ from typing import Any
 
 from PIL import Image
 
-from object_detector import Detection, aggregate_evidence
-from model_integrity import verify_registered_model
+try:
+    from .object_detector import Detection, aggregate_evidence
+    from .model_integrity import verify_registered_model
+except ImportError:
+    from object_detector import Detection, aggregate_evidence
+    from model_integrity import verify_registered_model
 
 
 def stable_bucket(item_id: str) -> float:

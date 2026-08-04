@@ -77,7 +77,7 @@ class ZeroShotHardwareDetector:
         self.model.eval()
         self._query_to_class = config.query_to_class()
 
-    def detect(self, image: Image.Image, *, image_index: int | None = None) -> list[Detection]:
+    def detect(self, image: Image.Image, *, image_index: int | None = None, threshold: float = 0.20) -> list[Detection]:
         queries = self.config.queries()
         inputs = self.processor(images=image, text=queries, return_tensors="pt").to(self.device)
         with torch.no_grad():
@@ -86,8 +86,8 @@ class ZeroShotHardwareDetector:
         processed = self.processor.post_process_grounded_object_detection(
             outputs,
             inputs.input_ids,
-            threshold=0.20,
-            text_threshold=0.20,
+            threshold=threshold,
+            text_threshold=threshold,
             target_sizes=target_sizes,
         )[0]
         detections: list[Detection] = []

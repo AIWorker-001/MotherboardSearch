@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "tiling": {
+    "enabled": true,
+    "minimum_side": 900,
+    "tile_size": 768,
+    "overlap": 0.20
+  },
+  "geometry": {
+    "minimum_area_ratio": 0.0008,
+    "maximum_area_ratio": 0.65,
+    "socket_minimum_area_ratio": 0.002,
+    "cooler_minimum_area_ratio": 0.01
+  },
+  "fusion": {
+    "single_image_weight": 1.0,
+    "additional_image_weight": 0.35,
+    "corroboration_bonus": 0.08,
+    "strong_threshold": 0.58,
+    "moderate_threshold": 0.46,
+    "conflict_margin": 0.10,
+    "minimum_distinct_images_for_damage": 2
+  }
+}
