@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "currency": "USD",
+  "defaults": {
+    "motherboard": {"median": 45.0, "low": 25.0, "high": 75.0, "samples": 0},
+    "cpu": {"median": 75.0, "low": 40.0, "high": 130.0, "samples": 0},
+    "ram": {"median": 25.0, "low": 15.0, "high": 40.0, "samples": 0},
+    "nvme": {"median": 22.0, "low": 12.0, "high": 35.0, "samples": 0}
+  },
+  "motherboards": {
+    "ASUS ROG MAXIMUS X CODE": {"median": 120.0, "low": 85.0, "high": 165.0, "samples": 8},
+    "GIGABYTE Z690 AORUS ELITE AX": {"median": 125.0, "low": 90.0, "high": 165.0, "samples": 10},
+    "MSI MPG B550 GAMING EDGE WIFI": {"median": 95.0, "low": 70.0, "high": 125.0, "samples": 9},
+    "MSI B450 TOMAHAWK MAX": {"median": 65.0, "low": 45.0, "high": 85.0, "samples": 11}
+  },
+  "cpus": {
+    "INTEL CORE I7-7700": {"median": 70.0, "low": 50.0, "high": 90.0, "samples": 14},
+    "INTEL CORE I7-8700": {"median": 85.0, "low": 65.0, "high": 110.0, "samples": 16},
+    "INTEL CORE I7-9700K": {"median": 125.0, "low": 95.0, "high": 155.0, "samples": 12},
+    "INTEL CORE I7-10700": {"median": 120.0, "low": 90.0, "high": 150.0, "samples": 13},
+    "AMD RYZEN 7 3700X": {"median": 85.0, "low": 65.0, "high": 105.0, "samples": 15},
+    "AMD RYZEN 7 5700X": {"median": 115.0, "low": 90.0, "high": 140.0, "samples": 15},
+    "AMD RYZEN 7 7700": {"median": 180.0, "low": 145.0, "high": 220.0, "samples": 10}
+  }
+}

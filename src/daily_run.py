@@ -17,6 +17,10 @@ DETECTOR_FILES = [
     ROOT / "config" / "detection_classes.json",
     ROOT / "src" / "value_engine.py",
     ROOT / "config" / "value_model.json",
+    ROOT / "src" / "model_identification.py",
+    ROOT / "src" / "market_pricing.py",
+    ROOT / "src" / "phase4_enrichment.py",
+    ROOT / "config" / "market_values.json",
     ROOT / "src" / "collect_true_galleries.js",
 ]
 
@@ -54,6 +58,9 @@ def main() -> int:
     results = output / "new_worker_value_report.json"
     annotated = output / "annotated"
     value_report = output / "value_report.json"
+    identifications = output / "identifications.json"
+    market_pricing = output / "market_pricing.json"
+    phase4_report = output / "phase4_value_report.json"
     search_errors = output / "search_errors.json"
     gallery_errors = output / "gallery_errors.json"
     image_errors = output / "image_download_errors.json"
@@ -130,6 +137,24 @@ def main() -> int:
         "--output", str(value_report),
     ])
     run([
+        sys.executable, "src/model_identification.py",
+        "--listings", str(pending), "--cache-dir", str(cache_dir),
+        "--catalog", str(ROOT / "config" / "market_values.json"),
+        "--output", str(identifications),
+    ])
+    run([
+        sys.executable, "src/market_pricing.py",
+        "--identifications", str(identifications),
+        "--catalog", str(ROOT / "config" / "market_values.json"),
+        "--outcomes", str(ROOT / "data" / "purchase_outcomes.json"),
+        "--output", str(market_pricing),
+    ])
+    run([
+        sys.executable, "src/phase4_enrichment.py",
+        "--value-report", str(value_report), "--identifications", str(identifications),
+        "--pricing", str(market_pricing), "--output", str(phase4_report),
+    ])
+    run([
         sys.executable, "src/processing_state.py", "merge",
         "--listings", str(pending), "--results", str(results),
         "--state", str(args.state), "--version", version,
@@ -156,6 +181,9 @@ def main() -> int:
         "phase2_report": str(phase2_results) if phase2_results.exists() else None,
         "annotated_dir": str(annotated) if annotated.exists() else None,
         "value_report": str(value_report) if value_report.exists() else None,
+        "phase4_value_report": str(phase4_report) if phase4_report.exists() else None,
+        "identifications": str(identifications) if identifications.exists() else None,
+        "market_pricing": str(market_pricing) if market_pricing.exists() else None,
         "state": str(args.state),
     }
     run_report.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")

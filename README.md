@@ -205,3 +205,37 @@ python3 src/value_engine.py \
 ```
 
 The default component values are intentionally conservative placeholders. They should be calibrated from actual purchase outcomes and current resale data before treating maximum bids as authoritative.
+
+## Phase 4 model identification and market calibration
+
+Phase 4 adds model-specific valuation and confidence intervals.
+
+The daily pipeline now:
+
+1. Extracts motherboard and CPU model candidates from listing titles, descriptions, and OCR of cached images.
+2. Fuzzy-matches candidates against a versioned market catalog.
+3. Resolves low/median/high market values from either the catalog or at least three matching real purchase outcomes.
+4. Enriches the Phase 3 report with market-value, profit, and maximum-bid intervals.
+5. Writes `output/phase4_value_report.json`.
+
+New files:
+
+- `config/market_values.json`: maintainable model-level price ranges.
+- `data/purchase_outcomes.json`: committed history of actual purchases and realized values.
+- `src/model_identification.py`: title/OCR extraction and catalog matching.
+- `src/market_pricing.py`: catalog and empirical pricing resolution.
+- `src/outcome_tracker.py`: records actual results for calibration.
+- `src/phase4_enrichment.py`: confidence-interval enrichment.
+
+Record an actual outcome with:
+
+```bash
+python3 src/outcome_tracker.py \
+  --item-id 123456789 \
+  --component-type cpu \
+  --model "INTEL CORE I7-9700K" \
+  --purchase-cost 65 \
+  --realized-value 125
+```
+
+The bundled prices are seed values, not live market claims. Daily reliability improves as the catalog is maintained and actual outcomes accumulate.
