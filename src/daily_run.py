@@ -33,16 +33,25 @@ def main() -> int:
     output = args.output_dir
     output.mkdir(parents=True, exist_ok=True)
     listings = output / "listings.json"
+    all_item_ids = output / "all_item_ids.txt"
+    all_galleries = output / "all_galleries.json"
+    candidates = output / "candidates.json"
     pending = output / "pending_listings.json"
-    item_ids = output / "pending_item_ids.txt"
     galleries = output / "pending_galleries.json"
     results = output / "new_worker_value_report.json"
     version = detector_version(DETECTOR_FILES)
 
     run(["node", "src/search_shopgoodwill.js", "--query", args.query, "--pages", str(args.pages), "--output", str(listings)])
+    all_items = json.loads(listings.read_text(encoding="utf-8"))
+    all_item_ids.write_text("\n".join(str(item["id"]) for item in all_items) + "\n", encoding="utf-8")
+    run(["node", "src/collect_true_galleries.js", "--ids-file", str(all_item_ids), "--output", str(all_galleries)])
+    run([
+        sys.executable, "src/prepare_candidates.py",
+        "--listings", str(listings), "--galleries", str(all_galleries), "--output", str(candidates),
+    ])
     run([
         sys.executable, "src/processing_state.py", "pending",
-        "--listings", str(listings), "--state", str(args.state),
+        "--listings", str(candidates), "--state", str(args.state),
         "--version", version, "--output", str(pending),
         "--retention-days", str(args.retention_days),
     ])
@@ -52,8 +61,10 @@ def main() -> int:
         print(json.dumps({"status": "nothing_new", "detector_version": version, "processed": 0}))
         return 0
 
-    item_ids.write_text("\n".join(str(item["id"]) for item in pending_items) + "\n", encoding="utf-8")
-    run(["node", "src/collect_true_galleries.js", "--ids-file", str(item_ids), "--output", str(galleries)])
+    run([
+        sys.executable, "src/extract_pending_galleries.py",
+        "--candidates", str(pending), "--output", str(galleries),
+    ])
     run([
         sys.executable, "src/motherboard_search.py", "--galleries", str(galleries),
         "--output", str(results), "--cache-dir", str(output / "cache" / version),

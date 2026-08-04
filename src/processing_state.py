@@ -8,7 +8,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
-STATE_SCHEMA_VERSION = 1
+STATE_SCHEMA_VERSION = 2
 DEFAULT_RETENTION_DAYS = 7
 
 
@@ -24,6 +24,11 @@ def parse_time(value: str) -> datetime:
     return datetime.fromisoformat(value.replace("Z", "+00:00")).astimezone(timezone.utc)
 
 
+def stable_hash(value: Any, *, length: int = 16) -> str:
+    payload = json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
+    return hashlib.sha256(payload).hexdigest()[:length]
+
+
 def detector_version(paths: list[Path]) -> str:
     digest = hashlib.sha256()
     for path in sorted(paths, key=lambda item: str(item)):
@@ -34,12 +39,39 @@ def detector_version(paths: list[Path]) -> str:
     return digest.hexdigest()[:16]
 
 
+def listing_fingerprint(listing: dict[str, Any], gallery: dict[str, Any] | None = None) -> str:
+    gallery = gallery or {}
+    normalized = {
+        "item_id": str(listing["id"]),
+        "title": listing.get("title", ""),
+        "card": listing.get("card", ""),
+        "gallery_urls": sorted(set(gallery.get("urls", []))),
+    }
+    return stable_hash(normalized)
+
+
+def result_fingerprint(result: dict[str, Any]) -> str:
+    normalized = {
+        "cpu_state": result.get("cpu_state"),
+        "value_score": result.get("value_score"),
+        "maxima": result.get("maxima", {}),
+        "gallery_count": result.get("gallery_count", 0),
+    }
+    return stable_hash(normalized)
+
+
 def load_state(path: Path) -> dict[str, Any]:
     if not path.exists():
         return {"schema_version": STATE_SCHEMA_VERSION, "updated_at": None, "entries": []}
     state = json.loads(path.read_text(encoding="utf-8"))
-    if state.get("schema_version") != STATE_SCHEMA_VERSION:
-        raise ValueError(f"Unsupported state schema: {state.get('schema_version')}")
+    schema = state.get("schema_version", 1)
+    if schema == 1:
+        for entry in state.get("entries", []):
+            entry.setdefault("listing_hash", "legacy")
+            entry.setdefault("result_hash", None)
+        state["schema_version"] = STATE_SCHEMA_VERSION
+    elif schema != STATE_SCHEMA_VERSION:
+        raise ValueError(f"Unsupported state schema: {schema}")
     state.setdefault("entries", [])
     return state
 
@@ -54,13 +86,19 @@ def prune_state(state: dict[str, Any], *, now: datetime, retention_days: int) ->
     return before - len(state["entries"])
 
 
-def processed_keys(state: dict[str, Any]) -> set[tuple[str, str]]:
-    return {(str(entry["item_id"]), str(entry["detector_version"])) for entry in state["entries"]}
+def processed_keys(state: dict[str, Any]) -> set[tuple[str, str, str]]:
+    return {
+        (str(entry["item_id"]), str(entry["detector_version"]), str(entry.get("listing_hash", "legacy")))
+        for entry in state["entries"]
+    }
 
 
 def select_pending(listings: list[dict[str, Any]], state: dict[str, Any], version: str) -> list[dict[str, Any]]:
     completed = processed_keys(state)
-    return [listing for listing in listings if (str(listing["id"]), version) not in completed]
+    return [
+        listing for listing in listings
+        if (str(listing["id"]), version, str(listing["listing_hash"])) not in completed
+    ]
 
 
 def merge_results(
@@ -74,13 +112,14 @@ def merge_results(
     listing_by_id = {str(item["id"]): item for item in listings}
     result_by_id = {str(item.get("item_id", item.get("id"))): item for item in results}
     existing = {
-        (str(entry["item_id"]), str(entry["detector_version"])): entry
+        (str(entry["item_id"]), str(entry["detector_version"]), str(entry.get("listing_hash", "legacy"))): entry
         for entry in state["entries"]
     }
     timestamp = isoformat(now)
 
     for item_id, listing in listing_by_id.items():
-        key = (item_id, version)
+        listing_hash = str(listing["listing_hash"])
+        key = (item_id, version, listing_hash)
         result = result_by_id.get(item_id)
         if result is None:
             continue
@@ -88,6 +127,8 @@ def merge_results(
         entry.update({
             "item_id": item_id,
             "detector_version": version,
+            "listing_hash": listing_hash,
+            "result_hash": result_fingerprint(result),
             "title": listing.get("title", result.get("title", "")),
             "url": listing.get("url", f"https://shopgoodwill.com/item/{item_id}"),
             "first_seen_at": entry.get("first_seen_at", timestamp),

@@ -94,3 +94,13 @@ After a successful run, publish the updated ledger through the GitHub App:
 ```
 
 The ledger intentionally stores compact scores and metadata rather than images or full per-crop reports. Entries not seen within the retention window are removed. Generated listings, galleries, images, and detailed reports remain under `output/` and are ignored by Git.
+
+### Change-aware processing
+
+Each ledger entry now records three fingerprints:
+
+- `detector_version`: source hash of the detector and gallery extractor.
+- `listing_hash`: stable hash of item metadata and the sorted true-gallery image URLs.
+- `result_hash`: stable hash of the compact detection result.
+
+A listing is skipped only when its item ID, detector version, and listing hash all match a prior entry. Adding, removing, or replacing a gallery photo therefore triggers analysis even when the detector code is unchanged. A detector-code change also triggers reanalysis. Result hashes make unchanged outcomes explicit and can be used by reporting or commit automation to suppress no-op result publications.
