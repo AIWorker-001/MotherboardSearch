@@ -48,6 +48,9 @@ def main() -> int:
     parser.add_argument("--phase2", choices=("on", "off", "only"), default="on")
     parser.add_argument("--phase2-model", default="IDEA-Research/grounding-dino-tiny")
     parser.add_argument("--production-model", choices=("auto", "fallback", "trained"), default=None)
+    parser.add_argument("--distributed", choices=("off", "plan", "local"), default="off")
+    parser.add_argument("--distributed-shards", type=int, default=None)
+    parser.add_argument("--distributed-workers", type=int, default=2)
     parser.add_argument("--output-dir", type=Path, default=ROOT / "output")
     parser.add_argument("--state", type=Path, default=ROOT / "data" / "processed.json")
     args = parser.parse_args()
@@ -106,40 +109,63 @@ def main() -> int:
         print(json.dumps({"status": "nothing_new", "detector_version": version, "processed": 0}))
         return 0
 
-    run([
-        sys.executable, "src/extract_pending_galleries.py",
-        "--candidates", str(pending), "--output", str(galleries),
-    ])
-    cache_dir = output / "cache" / version
-    if args.phase2 != "only":
-        run([
-            sys.executable, "src/motherboard_search.py", "--galleries", str(galleries),
-            "--output", str(legacy_results), "--cache-dir", str(cache_dir),
-            "--errors", str(image_errors), "--download-workers", str(args.download_workers),
-        ])
+    distributed_used = False
+    if args.distributed != "off":
+        distributed_config = json.loads((ROOT / "config" / "distributed.json").read_text(encoding="utf-8"))
+        shard_count = args.distributed_shards or int(distributed_config["default_shards"])
+        if shard_count > int(distributed_config["maximum_shards"]):
+            raise ValueError("distributed shard count exceeds configured maximum")
+        run_id = f"daily-{version}"
+        distributed_root = output / "distributed" / run_id
+        inputs_dir = distributed_root / "inputs"
+        plan_path = distributed_root / "plan.json"
+        execution_path = distributed_root / "execution.json"
+        run([sys.executable, "src/shard_work.py", "--items", str(pending), "--shards", str(shard_count), "--output-dir", str(inputs_dir)])
+        run([sys.executable, "src/distributed_plan.py", "--manifest", str(inputs_dir / "manifest.json"), "--run-id", run_id, "--output", str(plan_path)])
+        if args.distributed == "plan":
+            print(json.dumps({"status": "distributed_plan_ready", "plan": str(plan_path), "run_id": run_id}))
+            return 0
+        run([sys.executable, "src/distributed_local_runner.py", "--plan", str(plan_path), "--workers", str(args.distributed_workers), "--output", str(execution_path)])
+        execution = json.loads(execution_path.read_text(encoding="utf-8"))
+        result_files = [row["result"] for row in execution if row["returncode"] == 0]
+        run([sys.executable, "src/merge_shards.py", "--inputs", *result_files, "--output", str(results)])
+        distributed_used = True
     else:
         run([
-            sys.executable, "src/download_gallery_images.py", "--galleries", str(galleries),
-            "--cache-dir", str(cache_dir), "--errors", str(image_errors),
-            "--download-workers", str(args.download_workers),
+            sys.executable, "src/extract_pending_galleries.py",
+            "--candidates", str(pending), "--output", str(galleries),
         ])
+    if not distributed_used:
+        cache_dir = output / "cache" / version
+        if args.phase2 != "only":
+            run([
+                sys.executable, "src/motherboard_search.py", "--galleries", str(galleries),
+                "--output", str(legacy_results), "--cache-dir", str(cache_dir),
+                "--errors", str(image_errors), "--download-workers", str(args.download_workers),
+            ])
+        else:
+            run([
+                sys.executable, "src/download_gallery_images.py", "--galleries", str(galleries),
+                "--cache-dir", str(cache_dir), "--errors", str(image_errors),
+                "--download-workers", str(args.download_workers),
+            ])
 
-    run([
-        sys.executable, "src/build_local_manifest.py", "--galleries", str(galleries),
-        "--cache-dir", str(cache_dir), "--output", str(phase2_manifest),
-    ])
-    if args.phase2 != "off":
         run([
-            sys.executable, "src/phase2_detector.py", "--manifest", str(phase2_manifest),
-            "--model", args.phase2_model, "--output", str(phase2_results),
-            "--annotated-dir", str(annotated),
+            sys.executable, "src/build_local_manifest.py", "--galleries", str(galleries),
+            "--cache-dir", str(cache_dir), "--output", str(phase2_manifest),
         ])
+        if args.phase2 != "off":
+            run([
+                sys.executable, "src/phase2_detector.py", "--manifest", str(phase2_manifest),
+                "--model", args.phase2_model, "--output", str(phase2_results),
+                "--annotated-dir", str(annotated),
+            ])
 
-    run([
-        sys.executable, "src/merge_detector_results.py",
-        "--legacy", str(legacy_results), "--phase2", str(phase2_results),
-        "--mode", args.phase2, "--output", str(results),
-    ])
+        run([
+            sys.executable, "src/merge_detector_results.py",
+            "--legacy", str(legacy_results), "--phase2", str(phase2_results),
+            "--mode", args.phase2, "--output", str(results),
+        ])
     deployment_path = ROOT / "config" / "deployment.json"
     if args.production_model:
         deployment = json.loads(deployment_path.read_text(encoding="utf-8"))
@@ -221,6 +247,7 @@ def main() -> int:
         "rollback_recommended": rollback_recommended,
         "rollback_reasons": monitoring.get("drift_reasons", []),
         "state": str(args.state),
+        "distributed": distributed_used,
     }
     run_report.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
     run([

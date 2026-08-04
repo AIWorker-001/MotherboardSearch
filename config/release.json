@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "required_python": "3.11",
+  "required_node": "18",
+  "required_commands": ["python3", "node", "npm", "gh", "tesseract"],
+  "required_files": [
+    "config/detection_classes.json",
+    "config/value_model.json",
+    "config/market_values.json",
+    "config/training.json",
+    "config/deployment.json",
+    "config/continual_learning.json",
+    "config/operations.json",
+    "config/distributed.json"
+  ],
+  "release_manifest": "release-manifest.json"
+}

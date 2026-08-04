@@ -374,3 +374,25 @@ python3 src/distributed_state.py init \
 ```
 
 Each AIWorker runs `src/process_shard.py` for its claimed shard. Completed `results.json` files are merged with `src/merge_shards.py`. The implementation is coordinator-neutral: AIWorkbench may dispatch the plan across one or many workers without changing the detector code.
+
+## Phase 10 release readiness and end-to-end distributed orchestration
+
+Phase 10 completes the original motherboard-search platform roadmap by integrating Phase 9 into the normal daily runner and adding release-readiness tooling.
+
+`daily_run.py` now supports:
+
+- `--distributed off`: the original single-worker pipeline
+- `--distributed plan`: create a portable AIWorkbench execution plan and stop
+- `--distributed local`: execute shards concurrently on the current AIWorker, merge them, and continue through production inference, valuation, monitoring, and reporting
+
+Release tooling includes configuration validation, machine readiness checks, and a reproducible SHA-256 release manifest.
+
+```bash
+python3 src/config_validator.py
+python3 src/system_doctor.py
+python3 src/release_manifest.py
+python3 src/daily_run.py --distributed plan --distributed-shards 8
+python3 src/daily_run.py --distributed local --distributed-shards 4 --distributed-workers 2
+```
+
+This is the final numbered infrastructure phase currently defined. Further work should be driven by real daily runs, labeled data, detector accuracy, and observed operational failures rather than adding phases speculatively.
