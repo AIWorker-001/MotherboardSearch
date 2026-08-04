@@ -38,3 +38,13 @@ def test_ram_and_nvme_raise_score():
     ])
     assert result["cpu_state"] == "visible_cpu_likely"
     assert result["value_score"] == 140
+
+
+def test_detection_config_filters_queries_by_group(tmp_path):
+    from src.object_detector import DetectionConfig
+    config = DetectionConfig(classes={
+        'socket': {'queries':['empty socket'], 'group':'socket_state'},
+        'cooler': {'queries':['cpu cooler'], 'group':'cooler'},
+    })
+    assert config.queries({'socket_state'}) == ['empty socket']
+    assert config.query_to_class({'cooler'}) == {'cpu cooler':'cooler'}

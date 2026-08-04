@@ -35,11 +35,21 @@ class DetectionConfig:
         raw = json.loads(path.read_text(encoding="utf-8"))
         return cls(classes=raw["classes"], schema_version=int(raw.get("schema_version", 1)))
 
-    def queries(self) -> list[str]:
-        return [query for spec in self.classes.values() for query in spec["queries"]]
+    def queries(self, groups: set[str] | None = None) -> list[str]:
+        return [
+            query
+            for spec in self.classes.values()
+            if groups is None or spec.get("group") in groups
+            for query in spec["queries"]
+        ]
 
-    def query_to_class(self) -> dict[str, str]:
-        return {query: label for label, spec in self.classes.items() for query in spec["queries"]}
+    def query_to_class(self, groups: set[str] | None = None) -> dict[str, str]:
+        return {
+            query: label
+            for label, spec in self.classes.items()
+            if groups is None or spec.get("group") in groups
+            for query in spec["queries"]
+        }
 
 
 def box_iou(left: tuple[float, float, float, float], right: tuple[float, float, float, float]) -> float:
@@ -77,9 +87,20 @@ class ZeroShotHardwareDetector:
         self.model.eval()
         self._query_to_class = config.query_to_class()
 
-    def detect(self, image: Image.Image, *, image_index: int | None = None, threshold: float = 0.20) -> list[Detection]:
-        queries = self.config.queries()
-        inputs = self.processor(images=image, text=queries, return_tensors="pt").to(self.device)
+    def detect(
+        self,
+        image: Image.Image,
+        *,
+        image_index: int | None = None,
+        threshold: float = 0.20,
+        groups: set[str] | None = None,
+    ) -> list[Detection]:
+        queries = self.config.queries(groups)
+        query_to_class = self.config.query_to_class(groups)
+        if not queries:
+            return []
+        prompt = ". ".join(query.rstrip(". ") for query in queries) + "."
+        inputs = self.processor(images=image, text=prompt, return_tensors="pt").to(self.device)
         with torch.no_grad():
             outputs = self.model(**inputs)
         target_sizes = torch.tensor([[image.height, image.width]], device=self.device)
@@ -93,10 +114,10 @@ class ZeroShotHardwareDetector:
         detections: list[Detection] = []
         for score, box, text_label in zip(processed["scores"], processed["boxes"], processed["text_labels"]):
             query = str(text_label)
-            label = self._query_to_class.get(query)
+            label = query_to_class.get(query)
             if label is None:
                 # Grounding DINO may normalize punctuation; select the closest exact-containing query.
-                label = next((self._query_to_class[q] for q in queries if query.lower() in q.lower() or q.lower() in query.lower()), None)
+                label = next((query_to_class[q] for q in queries if query.lower() in q.lower() or q.lower() in query.lower()), None)
             if label is None:
                 continue
             confidence = float(score)

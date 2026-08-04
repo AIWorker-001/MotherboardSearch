@@ -14,7 +14,8 @@ except ImportError:
 
 COOLERS = {"intel_stock_cooler", "amd_wraith_cooler", "tower_cpu_cooler", "aio_pump_block"}
 SOCKET_INSTALLED = {"cpu_installed"}
-SOCKET_EMPTY = {"empty_lga_socket", "empty_amd_socket"}
+SOCKET_EMPTY = {"empty_lga_socket", "empty_amd_socket", "exposed_lga_contact_field", "lga_center_rectangle", "open_lga_retention_frame"}
+LGA_EMPTY_CUES = {"empty_lga_socket", "exposed_lga_contact_field", "lga_center_rectangle", "open_lga_retention_frame"}
 DAMAGE = {"bent_socket_pins", "burn_damage", "cracked_pcb"}
 
 
@@ -112,6 +113,26 @@ def fused_decision(detections: Iterable[Detection], fusion: dict[str, Any]) -> d
     cooler_label, cooler_score, cooler_images = best(COOLERS)
     installed_label, installed_score, installed_images = best(SOCKET_INSTALLED)
     empty_label, empty_score, empty_images = best(SOCKET_EMPTY)
+    lga_cue_rows = [evidence[label] for label in LGA_EMPTY_CUES if label in evidence]
+    if lga_cue_rows:
+        lga_scores = sorted((float(row["score"]) for row in lga_cue_rows), reverse=True)
+        lga_images = len({d.image_index for d in rows if d.label in LGA_EMPTY_CUES})
+        lga_score = lga_scores[0]
+        if len(lga_scores) > 1:
+            lga_score += 0.18 * sum(lga_scores[1:]) / (len(lga_scores) - 1)
+            lga_score += 0.05 * min(2, len(lga_scores) - 1)
+        if lga_images > 1:
+            lga_score += 0.05 * min(2, lga_images - 1)
+        lga_score = min(1.0, lga_score)
+        if lga_score > empty_score:
+            empty_label, empty_score, empty_images = "empty_lga_visual_cues", round(lga_score, 4), lga_images
+            evidence["empty_lga_visual_cues"] = {
+                "score": round(lga_score, 4),
+                "max_score": round(lga_scores[0], 4),
+                "distinct_images": lga_images,
+                "detections": sum(int(row["detections"]) for row in lga_cue_rows),
+                "cue_labels": sorted(label for label in LGA_EMPTY_CUES if label in evidence),
+            }
     cover_score = evidence.get("socket_cover", {}).get("score", 0.0)
     strong = float(fusion["strong_threshold"])
     moderate = float(fusion["moderate_threshold"])

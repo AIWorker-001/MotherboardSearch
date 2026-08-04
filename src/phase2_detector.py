@@ -19,11 +19,13 @@ def main() -> int:
     parser.add_argument("--model", default="IDEA-Research/grounding-dino-tiny")
     parser.add_argument("--output", type=Path, default=Path("output/phase2_report.json"))
     parser.add_argument("--annotated-dir", type=Path, default=Path("output/annotated"))
+    parser.add_argument("--passes", default="socket_state,cooler,component,damage", help="Comma-separated detector groups")
     args = parser.parse_args()
 
     config = DetectionConfig.load(args.config)
     fusion_config = json.loads(args.fusion_config.read_text(encoding="utf-8"))
     detector = ZeroShotHardwareDetector(config, args.model)
+    passes = [value.strip() for value in args.passes.split(",") if value.strip()]
     items = json.loads(args.manifest.read_text(encoding="utf-8"))
     report = []
 
@@ -37,8 +39,14 @@ def main() -> int:
             tiling = fusion_config["tiling"]
             tiles = generate_tiles(image, int(tiling["tile_size"]), float(tiling["overlap"])) if tiling.get("enabled") and max(image.size) >= int(tiling["minimum_side"]) else [("full", (0, 0, image.width, image.height), image)]
             for tile_name, box, tile in tiles:
-                detections = detector.detect(tile, image_index=index, threshold=0.18 if tile_name != "full" else 0.20)
-                image_detections.extend(translate_detection(row, box[0], box[1]) for row in detections)
+                for detector_group in passes:
+                    detections = detector.detect(
+                        tile,
+                        image_index=index,
+                        threshold=0.18 if tile_name != "full" else 0.20,
+                        groups={detector_group},
+                    )
+                    image_detections.extend(translate_detection(row, box[0], box[1]) for row in detections)
             image_detections = geometry_filter(image_detections, image.size, fusion_config["geometry"])
             image_detections = non_max_suppression(image_detections, iou_threshold=0.40)
             all_detections.extend(image_detections)
@@ -49,6 +57,7 @@ def main() -> int:
                 "annotated": str(annotation_path),
                 "detection_count": len(image_detections),
                 "tiles_evaluated": len(tiles),
+                "passes_evaluated": passes,
             })
         evidence = fused_decision(all_detections, fusion_config["fusion"])
         report.append({"item_id": str(item["id"]), "title": item.get("title", ""), **evidence, "images": image_reports})

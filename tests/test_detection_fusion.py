@@ -56,3 +56,25 @@ def test_empty_socket_overrides_weak_cooler_evidence():
     config={'additional_image_weight':0.35,'corroboration_bonus':0.08,'strong_threshold':0.58,'moderate_threshold':0.46,'conflict_margin':0.10,'minimum_distinct_images_for_damage':2,'cooler_minimum_single_score':0.58,'cooler_minimum_corroborated_score':0.52,'empty_socket_override_threshold':0.50,'empty_socket_override_margin':0.05}
     result=fused_decision([d('empty_lga_socket',0.72,1),d('tower_cpu_cooler',0.44,2),d('tower_cpu_cooler',0.43,3)],config)
     assert result['cpu_state']=='empty_socket_likely'
+
+
+def test_multiple_lga_empty_cues_form_strong_empty_socket_evidence():
+    config={'additional_image_weight':0.35,'corroboration_bonus':0.08,'strong_threshold':0.58,'moderate_threshold':0.46,'conflict_margin':0.10,'minimum_distinct_images_for_damage':2,'cooler_minimum_single_score':0.58,'cooler_minimum_corroborated_score':0.52,'empty_socket_override_threshold':0.50,'empty_socket_override_margin':0.05}
+    result=fused_decision([
+        d('exposed_lga_contact_field',0.48,1),
+        d('lga_center_rectangle',0.46,1),
+        d('open_lga_retention_frame',0.43,2),
+    ],config)
+    assert result['cpu_state']=='empty_socket_likely'
+    assert result['maxima']['empty_lga_visual_cues'] >= 0.58
+
+
+def test_lga_empty_cues_override_false_cooler():
+    config={'additional_image_weight':0.35,'corroboration_bonus':0.08,'strong_threshold':0.58,'moderate_threshold':0.46,'conflict_margin':0.10,'minimum_distinct_images_for_damage':2,'cooler_minimum_single_score':0.58,'cooler_minimum_corroborated_score':0.52,'empty_socket_override_threshold':0.50,'empty_socket_override_margin':0.05}
+    result=fused_decision([
+        d('exposed_lga_contact_field',0.55,1),
+        d('lga_center_rectangle',0.50,1),
+        d('tower_cpu_cooler',0.44,2),
+        d('tower_cpu_cooler',0.43,3),
+    ],config)
+    assert result['cpu_state']=='empty_socket_likely'
