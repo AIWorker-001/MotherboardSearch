@@ -62,3 +62,19 @@ python3 src/motherboard_search.py \
 ## Reliability
 
 This is a ranking and triage tool, not an unattended purchasing system. Cooler detection should become robust with a labeled dataset and an object detector. Bare CPU and socket-state detection require tighter geometric validation and should retain human review for ambiguous cases.
+
+## Incremental daily operation
+
+The daily runner keeps a committed seven-day rolling ledger at `data/processed.json`. A listing is skipped only when the same ShopGoodwill item ID has already been processed with the same detector code version. The detector version is a SHA-256 fingerprint of the scoring and gallery-extraction source files, so changing detection code automatically causes active listings to be reprocessed.
+
+```bash
+python3 src/daily_run.py --query motherboard --pages 3 --retention-days 7
+```
+
+After a successful run, publish the updated ledger through the GitHub App:
+
+```bash
+./scripts_commit_state.sh
+```
+
+The ledger intentionally stores compact scores and metadata rather than images or full per-crop reports. Entries not seen within the retention window are removed. Generated listings, galleries, images, and detailed reports remain under `output/` and are ignored by Git.
