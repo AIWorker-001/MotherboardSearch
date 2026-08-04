@@ -104,3 +104,26 @@ Each ledger entry now records three fingerprints:
 - `result_hash`: stable hash of the compact detection result.
 
 A listing is skipped only when its item ID, detector version, and listing hash all match a prior entry. Adding, removing, or replacing a gallery photo therefore triggers analysis even when the detector code is unchanged. A detector-code change also triggers reanalysis. Result hashes make unchanged outcomes explicit and can be used by reporting or commit automation to suppress no-op result publications.
+
+## Phase 1 crawler reliability
+
+The production crawler now includes:
+
+- Persistent Playwright session state under `output/session/`.
+- Exponential backoff with jitter for navigation failures.
+- Explicit detection of HTTP 403/429/5xx responses, Cloudflare challenges, access-denied pages, and human-verification pages.
+- Per-page and per-listing error reports instead of silent omissions.
+- Parallel item-gallery extraction with configurable concurrency.
+- Retried, parallel image downloads with `Retry-After` support and content-type validation.
+- A consolidated `output/run_report.json` for each daily run.
+
+Useful controls:
+
+```bash
+python3 src/daily_run.py \
+  --browser-retries 4 \
+  --gallery-concurrency 4 \
+  --download-workers 8
+```
+
+Concurrency should remain conservative. ShopGoodwill throttling or blocking is recorded and retried; the crawler does not attempt to bypass access controls.

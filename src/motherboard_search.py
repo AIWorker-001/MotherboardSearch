@@ -11,6 +11,9 @@ from pathlib import Path
 from typing import Any
 
 import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
+from concurrent.futures import ThreadPoolExecutor, as_completed
 import torch
 from PIL import Image
 from transformers import CLIPModel, CLIPProcessor
@@ -80,7 +83,37 @@ def make_crops(image: Image.Image) -> list[tuple[str, Image.Image]]:
     return crops
 
 
-def analyze(galleries_path: Path, output_path: Path, cache_dir: Path) -> list[DetectionResult]:
+def build_http_session(retries: int = 4) -> requests.Session:
+    retry = Retry(
+        total=retries,
+        connect=retries,
+        read=retries,
+        status=retries,
+        backoff_factor=1.0,
+        status_forcelist=(403, 408, 429, 500, 502, 503, 504),
+        allowed_methods=frozenset({"GET"}),
+        respect_retry_after_header=True,
+    )
+    session = requests.Session()
+    session.headers.update({"User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/126 Safari/537.36"})
+    session.mount("https://", HTTPAdapter(max_retries=retry, pool_connections=16, pool_maxsize=16))
+    return session
+
+
+def download_image(session: requests.Session, item_id: str, index: int, url: str, cache_dir: Path) -> tuple[int, Image.Image, Path]:
+    response = session.get(url, timeout=(15, 45))
+    response.raise_for_status()
+    content_type = response.headers.get("content-type", "")
+    if "image" not in content_type.lower():
+        preview = response.content[:300].decode("utf-8", errors="replace")
+        raise ValueError(f"unexpected_content_type={content_type!r} preview={preview!r}")
+    image = Image.open(BytesIO(response.content)).convert("RGB")
+    image_path = cache_dir / f"{item_id}_{index}.jpg"
+    image.save(image_path, quality=90)
+    return index, image, image_path
+
+
+def analyze(galleries_path: Path, output_path: Path, cache_dir: Path, errors_path: Path | None = None, download_workers: int = 8) -> list[DetectionResult]:
     items = json.loads(galleries_path.read_text(encoding="utf-8"))
     labels = list(PROMPTS)
     prompts = [PROMPTS[label] for label in labels]
@@ -92,13 +125,25 @@ def analyze(galleries_path: Path, output_path: Path, cache_dir: Path) -> list[De
 
     for item in items:
         per_image: list[dict[str, Any]] = []
-        for index, url in enumerate(item.get("urls", []), start=1):
-            response = requests.get(url, timeout=30)
-            response.raise_for_status()
-            image = Image.open(BytesIO(response.content)).convert("RGB")
-            image_path = cache_dir / f"{item['id']}_{index}.jpg"
-            image.save(image_path, quality=90)
+        download_errors: list[dict[str, Any]] = []
+        urls = list(item.get("urls", []))
+        session = build_http_session()
+        downloaded: list[tuple[int, Image.Image, Path]] = []
+        with ThreadPoolExecutor(max_workers=max(1, min(download_workers, len(urls) or 1))) as executor:
+            futures = {
+                executor.submit(download_image, session, str(item["id"]), index, url, cache_dir): (index, url)
+                for index, url in enumerate(urls, start=1)
+            }
+            for future in as_completed(futures):
+                index, url = futures[future]
+                try:
+                    downloaded.append(future.result())
+                except Exception as error:
+                    download_errors.append({"item_id": str(item["id"]), "image": index, "url": url, "error": str(error)})
+        session.close()
 
+        for index, image, image_path in sorted(downloaded, key=lambda row: row[0]):
+            url = urls[index - 1]
             best = {label: {"score": 0.0, "crop": None} for label in labels}
             for crop_name, crop in make_crops(image):
                 inputs = processor(text=prompts, images=crop, return_tensors="pt", padding=True)
@@ -135,7 +180,18 @@ def analyze(galleries_path: Path, output_path: Path, cache_dir: Path) -> list[De
             gallery_count=len(item.get("urls", [])),
             images=per_image,
         )
+        if download_errors:
+            result.images.append({"download_errors": download_errors})
         results.append(result)
+        if errors_path and download_errors:
+            errors_path.parent.mkdir(parents=True, exist_ok=True)
+            existing = []
+            if errors_path.exists():
+                try:
+                    existing = json.loads(errors_path.read_text(encoding="utf-8"))
+                except json.JSONDecodeError:
+                    existing = []
+            errors_path.write_text(json.dumps(existing + download_errors, indent=2) + "\n", encoding="utf-8")
         print(
             f"{result.item_id} | {result.cpu_state} | score={result.value_score} "
             f"| cooler={max(maxima['intel_cooler'], maxima['amd_cooler'], maxima['tower_cooler']):.3f} "
@@ -153,8 +209,12 @@ def main() -> int:
     parser.add_argument("--galleries", type=Path, required=True, help="JSON produced by collect_true_galleries.js")
     parser.add_argument("--output", type=Path, default=Path("output/worker_value_report.json"))
     parser.add_argument("--cache-dir", type=Path, default=Path("cache/images"))
+    parser.add_argument("--errors", type=Path, default=Path("output/image_download_errors.json"))
+    parser.add_argument("--download-workers", type=int, default=8)
     args = parser.parse_args()
-    analyze(args.galleries, args.output, args.cache_dir)
+    if args.errors.exists():
+        args.errors.unlink()
+    analyze(args.galleries, args.output, args.cache_dir, args.errors, args.download_workers)
     return 0
 
 
