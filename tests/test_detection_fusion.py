@@ -94,6 +94,7 @@ def test_cooler_requires_overlapping_positive_structure():
     result=fused_decision([
         d('tower_cpu_cooler',0.75,1,(100,100,500,500)),
         d('heatsink_fin_stack',0.65,1,(180,150,420,480)),
+        d('cooler_heatpipes',0.62,1,(200,180,400,460)),
     ],config)
     assert result['cpu_state']=='cooler_attached_cpu_highly_likely'
     assert result['cooler_validation']['accepted']==1
@@ -107,3 +108,24 @@ def test_distant_fan_filter_does_not_validate_cooler():
     ],config)
     assert result['cpu_state']=='unclear'
     assert result['cooler_validation']['accepted']==0
+
+
+def test_single_false_structure_does_not_validate_cooler():
+    config={'additional_image_weight':0.35,'corroboration_bonus':0.08,'strong_threshold':0.58,'moderate_threshold':0.46,'conflict_margin':0.10,'minimum_distinct_images_for_damage':2,'cooler_minimum_single_score':0.58,'cooler_minimum_corroborated_score':0.52,'empty_socket_override_threshold':0.50,'empty_socket_override_margin':0.05,'cooler_structure_minimum_overlap':0.35}
+    result=fused_decision([
+        d('tower_cpu_cooler',0.80,1,(100,100,500,500)),
+        d('cpu_fan_blades',0.70,1,(180,180,420,420)),
+    ],config)
+    assert result['cooler_validation']['accepted']==0
+    assert result['cpu_state']=='unclear'
+
+
+def test_fan_hub_and_blades_validate_cooler():
+    config={'additional_image_weight':0.35,'corroboration_bonus':0.08,'strong_threshold':0.58,'moderate_threshold':0.46,'conflict_margin':0.10,'minimum_distinct_images_for_damage':2,'cooler_minimum_single_score':0.58,'cooler_minimum_corroborated_score':0.52,'empty_socket_override_threshold':0.50,'empty_socket_override_margin':0.05,'cooler_structure_minimum_overlap':0.35}
+    result=fused_decision([
+        d('intel_stock_cooler',0.80,1,(100,100,500,500)),
+        d('cpu_fan_hub',0.70,1,(220,220,320,320)),
+        d('cpu_fan_blades',0.72,1,(160,160,440,440)),
+    ],config)
+    assert result['cooler_validation']['accepted']==1
+    assert result['cpu_state']=='cooler_attached_cpu_highly_likely'

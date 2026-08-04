@@ -100,11 +100,17 @@ def validated_cooler_detections(detections: Iterable[Detection], minimum_overlap
     accepted: list[Detection] = []
     rejected: list[Detection] = []
     for cooler in (row for row in rows if row.label in COOLERS):
-        corroborated = any(
-            structure.image_index == cooler.image_index
-            and box_intersection_over_smaller(cooler.box, structure.box) >= minimum_overlap
+        overlapping = [
+            structure
             for structure in structures
-        )
+            if structure.image_index == cooler.image_index
+            and box_intersection_over_smaller(cooler.box, structure.box) >= minimum_overlap
+        ]
+        labels = {row.label for row in overlapping}
+        fan_pair = {"cpu_fan_hub", "cpu_fan_blades"}.issubset(labels)
+        tower_pair = {"heatsink_fin_stack", "cooler_heatpipes"}.issubset(labels)
+        stock_fan_with_fins = "cpu_fan_blades" in labels and "heatsink_fin_stack" in labels
+        corroborated = fan_pair or tower_pair or stock_fan_with_fins
         if corroborated:
             accepted.append(cooler)
         else:
