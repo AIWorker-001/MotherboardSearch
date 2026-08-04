@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "dataset": {
+    "annotations": "data/annotations/annotations.json",
+    "images_root": "output/cache",
+    "splits": "data/splits",
+    "train_ratio": 0.7,
+    "validation_ratio": 0.15,
+    "test_ratio": 0.15,
+    "seed": 42
+  },
+  "active_learning": {
+    "review_limit": 50,
+    "uncertainty_weight": 0.55,
+    "disagreement_weight": 0.30,
+    "novelty_weight": 0.15
+  },
+  "training": {
+    "backend": "ultralytics",
+    "base_model": "yolo11n.pt",
+    "epochs": 50,
+    "image_size": 1024,
+    "batch_size": 8,
+    "patience": 10,
+    "workers": 4
+  },
+  "promotion": {
+    "minimum_map50": 0.70,
+    "minimum_precision": 0.80,
+    "minimum_recall": 0.75,
+    "maximum_false_positive_rate": 0.10
+  }
+}

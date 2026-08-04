@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "classes": [
+    "intel_stock_cooler",
+    "amd_wraith_cooler",
+    "tower_cpu_cooler",
+    "aio_pump_block",
+    "cpu_installed",
+    "empty_lga_socket",
+    "empty_amd_socket",
+    "socket_cover",
+    "ram_dimm",
+    "nvme_ssd",
+    "bent_socket_pins",
+    "burn_damage",
+    "cracked_pcb"
+  ],
+  "images": []
+}

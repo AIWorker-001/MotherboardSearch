@@ -239,3 +239,52 @@ python3 src/outcome_tracker.py \
 ```
 
 The bundled prices are seed values, not live market claims. Daily reliability improves as the catalog is maintained and actual outcomes accumulate.
+
+## Phase 5 supervised learning and active learning
+
+Phase 5 adds the infrastructure required to replace zero-shot inference with a dedicated, measurable detector.
+
+It includes:
+
+- a versioned bounding-box annotation store
+- an active-learning queue that prioritizes uncertainty, detector disagreement, and unknown models
+- deterministic train/validation/test splits
+- YOLO-format dataset generation
+- Ultralytics training and test evaluation entrypoints
+- explicit promotion thresholds for mAP50, precision, and recall
+- a model registry with SHA-256 verification and promotion safeguards
+
+Typical workflow:
+
+```bash
+python3 src/build_review_queue.py \
+  --results output/phase4_value_report.json \
+  --output output/review_queue.json
+
+python3 src/annotation_store.py add-box \
+  --path output/cache/<version>/<item>_1.jpg \
+  --item-id <item> \
+  --label cpu_installed \
+  --box 100 120 400 420 \
+  --reviewer jason
+
+python3 src/dataset_builder.py \
+  --output data/training/current
+
+python3 src/train_detector.py \
+  --dataset data/training/current/dataset.yaml
+
+python3 src/evaluate_detector.py \
+  --weights models/runs/<run>/weights/best.pt \
+  --dataset data/training/current/dataset.yaml \
+  --output models/runs/<run>/evaluation.json
+
+python3 src/model_registry.py register \
+  --name <run> \
+  --weights models/runs/<run>/weights/best.pt \
+  --evaluation models/runs/<run>/evaluation.json
+
+python3 src/model_registry.py promote --name <run>
+```
+
+The framework does not claim a trained production model until enough images have been labeled and a candidate passes the configured test thresholds. This prevents a model from becoming active merely because training completed.
