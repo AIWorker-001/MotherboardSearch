@@ -311,3 +311,7 @@ python3 src/rollback_model.py --reason "confidence drift"
 ```
 
 A trained model is still not used until Phase 5 registers and promotes one. This makes deployment safe before the first production-quality trained model exists.
+
+### Phase 6 hardening
+
+Production deployment now verifies the SHA-256 of the active model before inference. Missing or modified weights are rejected and routed to the fallback detector. The daily pipeline always builds the local image manifest, including legacy-only Phase 2 mode, and monitoring drift is reported without terminating an otherwise successful daily run. Drift adds `rollback_recommended` and `rollback_reasons` to `run_report.json`; changing Phase 6 routing, integrity, monitoring, or deployment configuration changes the detector version and reprocesses active listings.

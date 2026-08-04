@@ -22,6 +22,10 @@ DETECTOR_FILES = [
     ROOT / "src" / "phase4_enrichment.py",
     ROOT / "config" / "market_values.json",
     ROOT / "src" / "collect_true_galleries.js",
+    ROOT / "src" / "production_detector.py",
+    ROOT / "src" / "model_integrity.py",
+    ROOT / "src" / "inference_monitor.py",
+    ROOT / "config" / "deployment.json",
 ]
 
 
@@ -117,11 +121,11 @@ def main() -> int:
             "--download-workers", str(args.download_workers),
         ])
 
+    run([
+        sys.executable, "src/build_local_manifest.py", "--galleries", str(galleries),
+        "--cache-dir", str(cache_dir), "--output", str(phase2_manifest),
+    ])
     if args.phase2 != "off":
-        run([
-            sys.executable, "src/build_local_manifest.py", "--galleries", str(galleries),
-            "--cache-dir", str(cache_dir), "--output", str(phase2_manifest),
-        ])
         run([
             sys.executable, "src/phase2_detector.py", "--manifest", str(phase2_manifest),
             "--model", args.phase2_model, "--output", str(phase2_results),
@@ -152,6 +156,8 @@ def main() -> int:
         "--baseline", str(ROOT / "data" / "monitoring" / "baseline.json"),
         "--deployment", str(runtime_deployment), "--output", str(monitoring_report),
     ])
+    monitoring = json.loads(monitoring_report.read_text(encoding="utf-8"))
+    rollback_recommended = bool(monitoring.get("drift_detected"))
     results = production_results
     run([
         sys.executable, "src/value_engine.py",
@@ -209,6 +215,8 @@ def main() -> int:
         "market_pricing": str(market_pricing) if market_pricing.exists() else None,
         "production_detector_report": str(production_results) if production_results.exists() else None,
         "inference_monitoring": str(monitoring_report) if monitoring_report.exists() else None,
+        "rollback_recommended": rollback_recommended,
+        "rollback_reasons": monitoring.get("drift_reasons", []),
         "state": str(args.state),
     }
     run_report.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")

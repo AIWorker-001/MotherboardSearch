@@ -55,7 +55,7 @@ def main() -> int:
         updated = {"schema_version": 1, "model": None, **current}
         args.baseline.write_text(json.dumps(updated, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(report))
-    return 2 if reasons else 0
+    return 0
 
 
 if __name__ == "__main__":

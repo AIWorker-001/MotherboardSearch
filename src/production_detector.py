@@ -10,6 +10,7 @@ from typing import Any
 from PIL import Image
 
 from object_detector import Detection, aggregate_evidence
+from model_integrity import verify_registered_model
 
 
 def stable_bucket(item_id: str) -> float:
@@ -76,6 +77,14 @@ def main() -> int:
     deployment = json.loads(args.deployment.read_text(encoding="utf-8"))
     registry_path = Path(deployment["registry"])
     active_model = load_active_model(registry_path)
+    active_model_error = None
+    if active_model is not None:
+        valid, active_model_error, resolved_weights = verify_registered_model(active_model, Path.cwd())
+        if valid:
+            active_model = dict(active_model)
+            active_model["weights"] = str(resolved_weights)
+        else:
+            active_model = None
     manifest = json.loads(args.manifest.read_text(encoding="utf-8"))
     fallback = {str(row["item_id"]): row for row in json.loads(args.fallback_results.read_text(encoding="utf-8"))}
     output = []
@@ -92,6 +101,9 @@ def main() -> int:
         else:
             result = dict(fallback[item_id])
             result.update({"inference_backend": "fallback", "model_name": None})
+            if active_model_error:
+                result["trained_model_unavailable"] = active_model_error
+                result["needs_review"] = True
         output.append(result)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(output, indent=2) + "\n", encoding="utf-8")
