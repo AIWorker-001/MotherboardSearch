@@ -40,6 +40,7 @@ def main() -> int:
     parser.add_argument("--download-workers", type=int, default=8)
     parser.add_argument("--phase2", choices=("on", "off", "only"), default="on")
     parser.add_argument("--phase2-model", default="IDEA-Research/grounding-dino-tiny")
+    parser.add_argument("--production-model", choices=("auto", "fallback", "trained"), default=None)
     parser.add_argument("--output-dir", type=Path, default=ROOT / "output")
     parser.add_argument("--state", type=Path, default=ROOT / "data" / "processed.json")
     args = parser.parse_args()
@@ -56,6 +57,8 @@ def main() -> int:
     phase2_manifest = output / "phase2_manifest.json"
     phase2_results = output / "phase2_report.json"
     results = output / "new_worker_value_report.json"
+    production_results = output / "production_detector_report.json"
+    monitoring_report = output / "inference_monitoring.json"
     annotated = output / "annotated"
     value_report = output / "value_report.json"
     identifications = output / "identifications.json"
@@ -130,6 +133,26 @@ def main() -> int:
         "--legacy", str(legacy_results), "--phase2", str(phase2_results),
         "--mode", args.phase2, "--output", str(results),
     ])
+    deployment_path = ROOT / "config" / "deployment.json"
+    if args.production_model:
+        deployment = json.loads(deployment_path.read_text(encoding="utf-8"))
+        deployment["mode"] = args.production_model
+        runtime_deployment = output / "deployment.runtime.json"
+        runtime_deployment.write_text(json.dumps(deployment, indent=2) + "\n", encoding="utf-8")
+    else:
+        runtime_deployment = deployment_path
+    run([
+        sys.executable, "src/production_detector.py",
+        "--manifest", str(phase2_manifest), "--deployment", str(runtime_deployment),
+        "--fallback-results", str(results), "--output", str(production_results),
+    ])
+    run([
+        sys.executable, "src/inference_monitor.py",
+        "--results", str(production_results),
+        "--baseline", str(ROOT / "data" / "monitoring" / "baseline.json"),
+        "--deployment", str(runtime_deployment), "--output", str(monitoring_report),
+    ])
+    results = production_results
     run([
         sys.executable, "src/value_engine.py",
         "--listings", str(pending), "--results", str(results),
@@ -184,6 +207,8 @@ def main() -> int:
         "phase4_value_report": str(phase4_report) if phase4_report.exists() else None,
         "identifications": str(identifications) if identifications.exists() else None,
         "market_pricing": str(market_pricing) if market_pricing.exists() else None,
+        "production_detector_report": str(production_results) if production_results.exists() else None,
+        "inference_monitoring": str(monitoring_report) if monitoring_report.exists() else None,
         "state": str(args.state),
     }
     run_report.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")

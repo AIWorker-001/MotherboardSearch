@@ -288,3 +288,26 @@ python3 src/model_registry.py promote --name <run>
 ```
 
 The framework does not claim a trained production model until enough images have been labeled and a candidate passes the configured test thresholds. This prevents a model from becoming active merely because training completed.
+
+## Phase 6 production deployment, canarying, and drift monitoring
+
+Phase 6 connects promoted Phase 5 models to the daily pipeline without removing the validated zero-shot fallback.
+
+The production router supports:
+
+- `auto`: deterministic canary routing according to `canary_fraction`
+- `trained`: route every listing through the active registered model
+- `fallback`: disable trained inference immediately
+
+If no model is promoted, or trained inference raises an error, the pipeline uses the Phase 2 result and records the fallback reason. Daily output includes the backend and model used for every listing.
+
+The monitoring layer tracks mean confidence, review rate, and CPU-state frequency. It compares current inference against a committed baseline and reports confidence drops, review-rate spikes, and class-frequency shifts. `src/rollback_model.py` provides an explicit emergency return to fallback mode.
+
+Configuration is stored in `config/deployment.json`; the baseline is stored in `data/monitoring/baseline.json`.
+
+```bash
+python3 src/daily_run.py --production-model auto
+python3 src/rollback_model.py --reason "confidence drift"
+```
+
+A trained model is still not used until Phase 5 registers and promotes one. This makes deployment safe before the first production-quality trained model exists.

@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "mode": "auto",
+  "registry": "models/registry/registry.json",
+  "fallback": "phase2_zero_shot",
+  "canary_fraction": 0.10,
+  "minimum_images_for_drift": 30,
+  "drift": {
+    "confidence_drop": 0.15,
+    "class_frequency_delta": 0.25,
+    "review_rate_limit": 0.45
+  }
+}
