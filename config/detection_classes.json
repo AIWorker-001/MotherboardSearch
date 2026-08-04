@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "classes": {
+    "intel_stock_cooler": {
+      "queries": ["Intel stock CPU cooler mounted on a motherboard", "round Intel CPU fan attached to a motherboard"],
+      "threshold": 0.32,
+      "group": "cooler"
+    },
+    "amd_wraith_cooler": {
+      "queries": ["AMD Wraith CPU cooler mounted on a motherboard", "round AMD CPU fan attached to a motherboard"],
+      "threshold": 0.32,
+      "group": "cooler"
+    },
+    "tower_cpu_cooler": {
+      "queries": ["tower CPU heatsink with fan mounted on a motherboard", "large CPU air cooler attached to a motherboard"],
+      "threshold": 0.32,
+      "group": "cooler"
+    },
+    "aio_pump_block": {
+      "queries": ["AIO liquid cooler pump block mounted on a CPU socket", "liquid CPU cooler block attached to motherboard"],
+      "threshold": 0.32,
+      "group": "cooler"
+    },
+    "cpu_installed": {
+      "queries": ["silver CPU heat spreader installed in motherboard socket", "processor installed in an open motherboard socket"],
+      "threshold": 0.34,
+      "group": "socket_state"
+    },
+    "empty_lga_socket": {
+      "queries": ["empty Intel LGA CPU socket with exposed pins", "motherboard processor socket with no CPU"],
+      "threshold": 0.34,
+      "group": "socket_state"
+    },
+    "empty_amd_socket": {
+      "queries": ["empty AMD AM4 or AM5 CPU socket", "empty AMD motherboard processor socket"],
+      "threshold": 0.34,
+      "group": "socket_state"
+    },
+    "socket_cover": {
+      "queries": ["black plastic CPU socket protective cover", "processor socket shipping cover on motherboard"],
+      "threshold": 0.34,
+      "group": "socket_state"
+    },
+    "ram_dimm": {
+      "queries": ["RAM memory module installed in motherboard DIMM slot", "desktop memory stick installed on motherboard"],
+      "threshold": 0.30,
+      "group": "component"
+    },
+    "nvme_ssd": {
+      "queries": ["M.2 NVMe SSD installed on motherboard", "gumstick solid state drive mounted in M.2 slot"],
+      "threshold": 0.30,
+      "group": "component"
+    },
+    "bent_socket_pins": {
+      "queries": ["bent pins in a motherboard CPU socket", "damaged LGA socket pins"],
+      "threshold": 0.38,
+      "group": "damage"
+    },
+    "burn_damage": {
+      "queries": ["burned or charred motherboard component", "scorch damage on motherboard"],
+      "threshold": 0.38,
+      "group": "damage"
+    },
+    "cracked_pcb": {
+      "queries": ["cracked or broken motherboard circuit board", "physical crack in motherboard PCB"],
+      "threshold": 0.38,
+      "group": "damage"
+    }
+  }
+}

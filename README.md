@@ -127,3 +127,30 @@ python3 src/daily_run.py \
 ```
 
 Concurrency should remain conservative. ShopGoodwill throttling or blocking is recorded and retried; the crawler does not attempt to bypass access controls.
+
+## Phase 2 spatial hardware detection
+
+Phase 2 adds a spatial object-detection layer based on Grounding DINO. Unlike the original whole-image CLIP ranking, the detector returns labeled bounding boxes and confidence values for specific motherboard regions.
+
+Supported classes include:
+
+- Intel stock, AMD Wraith, tower, and AIO coolers
+- visible CPU, empty Intel/AMD socket, and socket cover
+- installed RAM and NVMe SSD
+- suspected bent socket pins, burn damage, and cracked PCB
+
+The class vocabulary and thresholds are versioned in `config/detection_classes.json`. The inference engine performs per-class non-maximum suppression, aggregates evidence across all listing photos, applies conservative confidence gates, marks ambiguous or damaged listings for human review, and writes annotated images.
+
+```bash
+python3 src/build_local_manifest.py \
+  --galleries output/pending_galleries.json \
+  --cache-dir output/cache/<detector-version> \
+  --output output/phase2_manifest.json
+
+python3 src/phase2_detector.py \
+  --manifest output/phase2_manifest.json \
+  --output output/phase2_report.json \
+  --annotated-dir output/annotated
+```
+
+This is a production inference framework, but its default zero-shot model still needs validation against a labeled ShopGoodwill dataset before purchasing decisions should be automatic. The confidence gates deliberately route borderline socket and damage cases to review.

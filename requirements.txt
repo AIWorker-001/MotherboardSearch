@@ -3,3 +3,5 @@ requests
 torch
 transformers
 safetensors
+accelerate
+sentencepiece
