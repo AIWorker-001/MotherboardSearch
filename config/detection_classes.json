@@ -128,6 +128,38 @@
       ],
       "threshold": 0.32,
       "group": "socket_state"
+    },
+    "cpu_fan_hub": {
+      "queries": [
+        "central circular hub of a CPU cooling fan",
+        "round fan motor hub on a CPU cooler"
+      ],
+      "threshold": 0.32,
+      "group": "cooler_structure"
+    },
+    "cpu_fan_blades": {
+      "queries": [
+        "radial fan blades on a CPU cooler",
+        "visible cooling fan blades attached to a CPU heatsink"
+      ],
+      "threshold": 0.32,
+      "group": "cooler_structure"
+    },
+    "heatsink_fin_stack": {
+      "queries": [
+        "parallel metal heatsink fins on a CPU cooler",
+        "dense aluminum fin stack of a tower CPU heatsink"
+      ],
+      "threshold": 0.34,
+      "group": "cooler_structure"
+    },
+    "cooler_heatpipes": {
+      "queries": [
+        "curved copper heat pipes on a CPU cooler",
+        "metal heatpipes connecting a CPU cooler base to fins"
+      ],
+      "threshold": 0.34,
+      "group": "cooler_structure"
     }
   }
 }

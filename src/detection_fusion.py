@@ -13,6 +13,7 @@ except ImportError:
     from object_detector import Detection, non_max_suppression
 
 COOLERS = {"intel_stock_cooler", "amd_wraith_cooler", "tower_cpu_cooler", "aio_pump_block"}
+COOLER_STRUCTURE = {"cpu_fan_hub", "cpu_fan_blades", "heatsink_fin_stack", "cooler_heatpipes"}
 SOCKET_INSTALLED = {"cpu_installed"}
 SOCKET_EMPTY = {"empty_lga_socket", "empty_amd_socket", "exposed_lga_contact_field", "lga_center_rectangle", "open_lga_retention_frame"}
 LGA_EMPTY_CUES = {"empty_lga_socket", "exposed_lga_contact_field", "lga_center_rectangle", "open_lga_retention_frame"}
@@ -79,6 +80,37 @@ def geometry_filter(detections: Iterable[Detection], image_size: tuple[int, int]
     return output
 
 
+
+
+def box_intersection_over_smaller(left: tuple[float, float, float, float], right: tuple[float, float, float, float]) -> float:
+    lx1, ly1, lx2, ly2 = left
+    rx1, ry1, rx2, ry2 = right
+    ix1, iy1 = max(lx1, rx1), max(ly1, ry1)
+    ix2, iy2 = min(lx2, rx2), min(ly2, ry2)
+    intersection = max(0.0, ix2 - ix1) * max(0.0, iy2 - iy1)
+    left_area = max(0.0, lx2 - lx1) * max(0.0, ly2 - ly1)
+    right_area = max(0.0, rx2 - rx1) * max(0.0, ry2 - ry1)
+    smaller = min(left_area, right_area)
+    return intersection / smaller if smaller > 0 else 0.0
+
+
+def validated_cooler_detections(detections: Iterable[Detection], minimum_overlap: float = 0.35) -> tuple[list[Detection], list[Detection]]:
+    rows = list(detections)
+    structures = [row for row in rows if row.label in COOLER_STRUCTURE]
+    accepted: list[Detection] = []
+    rejected: list[Detection] = []
+    for cooler in (row for row in rows if row.label in COOLERS):
+        corroborated = any(
+            structure.image_index == cooler.image_index
+            and box_intersection_over_smaller(cooler.box, structure.box) >= minimum_overlap
+            for structure in structures
+        )
+        if corroborated:
+            accepted.append(cooler)
+        else:
+            rejected.append(cooler)
+    return accepted, rejected
+
 def evidence_by_label(detections: Iterable[Detection], fusion: dict[str, Any]) -> dict[str, dict[str, Any]]:
     grouped: dict[str, list[Detection]] = defaultdict(list)
     for detection in detections:
@@ -103,8 +135,14 @@ def evidence_by_label(detections: Iterable[Detection], fusion: dict[str, Any]) -
 
 
 def fused_decision(detections: Iterable[Detection], fusion: dict[str, Any]) -> dict[str, Any]:
-    rows = list(detections)
+    original_rows = list(detections)
+    accepted_coolers, rejected_coolers = validated_cooler_detections(
+        original_rows,
+        float(fusion.get("cooler_structure_minimum_overlap", 0.35)),
+    )
+    rows = [row for row in original_rows if row.label not in COOLERS] + accepted_coolers
     evidence = evidence_by_label(rows, fusion)
+    rejected_cooler_score = max((row.score for row in rejected_coolers), default=0.0)
 
     def best(labels: set[str]) -> tuple[str | None, float, int]:
         choices = [(label, evidence.get(label, {}).get("score", 0.0), evidence.get(label, {}).get("distinct_images", 0)) for label in labels]
@@ -139,6 +177,8 @@ def fused_decision(detections: Iterable[Detection], fusion: dict[str, Any]) -> d
     margin = float(fusion["conflict_margin"])
 
     review_reasons: list[str] = []
+    if rejected_coolers and not accepted_coolers:
+        review_reasons.append("uncorroborated_cooler_detections_rejected")
     conflict = installed_score >= moderate and empty_score >= moderate and abs(installed_score - empty_score) < margin
     empty_override_threshold = float(fusion.get("empty_socket_override_threshold", strong))
     empty_override_margin = float(fusion.get("empty_socket_override_margin", margin))
@@ -216,5 +256,10 @@ def fused_decision(detections: Iterable[Detection], fusion: dict[str, Any]) -> d
         "damage_labels": sorted(damage_labels),
         "needs_review": bool(review_reasons),
         "review_reasons": review_reasons,
-        "detections": [asdict(row) for row in rows],
+        "cooler_validation": {
+            "accepted": len(accepted_coolers),
+            "rejected": len(rejected_coolers),
+            "maximum_rejected_score": round(rejected_cooler_score, 4),
+        },
+        "detections": [asdict(row) for row in original_rows],
     }

@@ -19,7 +19,7 @@ def main() -> int:
     parser.add_argument("--model", default="IDEA-Research/grounding-dino-tiny")
     parser.add_argument("--output", type=Path, default=Path("output/phase2_report.json"))
     parser.add_argument("--annotated-dir", type=Path, default=Path("output/annotated"))
-    parser.add_argument("--passes", default="socket_state,cooler,component,damage", help="Comma-separated detector groups")
+    parser.add_argument("--passes", default="socket_state,cooler,cooler_structure,component,damage", help="Comma-separated detector groups")
     args = parser.parse_args()
 
     config = DetectionConfig.load(args.config)

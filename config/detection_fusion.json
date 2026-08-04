@@ -26,6 +26,7 @@
     "cooler_minimum_single_score": 0.58,
     "cooler_minimum_corroborated_score": 0.52,
     "empty_socket_override_margin": 0.05,
-    "empty_socket_override_threshold": 0.5
+    "empty_socket_override_threshold": 0.5,
+    "cooler_structure_minimum_overlap": 0.35
   }
 }
