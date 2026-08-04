@@ -315,3 +315,19 @@ A trained model is still not used until Phase 5 registers and promotes one. This
 ### Phase 6 hardening
 
 Production deployment now verifies the SHA-256 of the active model before inference. Missing or modified weights are rejected and routed to the fallback detector. The daily pipeline always builds the local image manifest, including legacy-only Phase 2 mode, and monitoring drift is reported without terminating an otherwise successful daily run. Drift adds `rollback_recommended` and `rollback_reasons` to `run_report.json`; changing Phase 6 routing, integrity, monitoring, or deployment configuration changes the detector version and reprocesses active listings.
+
+## Phase 7 continual learning and controlled model improvement
+
+Phase 7 closes the learning loop. Newly reviewed images accumulate in the annotation store, and the continual-learning controller determines when there is enough new data to justify another training run. It enforces minimum total labels, minimum newly labeled images, a cooldown between runs, and a failure circuit breaker.
+
+New candidates are registered but not automatically trusted. `compare_models.py` compares a candidate against the active model using relative mAP50, precision, and recall requirements. `continual_promotion.py` requires explicit approval by default because `automatic_promotion` is false.
+
+```bash
+python3 src/training_status.py
+python3 src/continual_learning.py --dry-run
+python3 src/continual_learning.py
+python3 src/compare_models.py --candidate <name> --output models/runs/<name>/comparison.json
+python3 src/continual_promotion.py --candidate <name> --comparison models/runs/<name>/comparison.json
+```
+
+Configuration and persistent state are stored in `config/continual_learning.json` and `data/continual/state.json`. This creates a repeatable active-learning cycle without allowing a newly trained model to silently replace production inference.

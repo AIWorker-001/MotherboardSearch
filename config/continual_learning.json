@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "enabled": true,
+  "minimum_new_labeled_images": 50,
+  "minimum_total_labeled_images": 200,
+  "minimum_days_between_training": 7,
+  "maximum_training_failures": 3,
+  "candidate_comparison": {
+    "minimum_map50_gain": 0.02,
+    "minimum_precision_gain": 0.00,
+    "minimum_recall_gain": 0.00,
+    "allow_tradeoff_if_map50_gain": 0.05
+  },
+  "automatic_promotion": false,
+  "state_file": "data/continual/state.json"
+}

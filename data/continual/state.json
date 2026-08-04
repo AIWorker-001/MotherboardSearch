@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "last_training_at": null,
+  "last_training_annotation_count": 0,
+  "consecutive_failures": 0,
+  "last_candidate": null,
+  "last_decision": null
+}
