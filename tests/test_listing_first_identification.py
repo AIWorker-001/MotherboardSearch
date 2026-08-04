@@ -41,3 +41,22 @@ def test_exact_model_suffix_conflict_helper():
     from src.model_identification import exact_model_conflict
     assert exact_model_conflict("ASUS PRIME Z390-A", "ASUS PRIME Z390-P")
     assert not exact_model_conflict("ASUS PRIME Z390-A", "PRIME Z390-A")
+
+
+def test_extracts_concise_legacy_asus_model():
+    from src.model_identification import canonical_listing_model
+    assert canonical_listing_model('ASUS P8P67 EVO Motherboard with CPU Fan and Heatsinks') == 'ASUS P8P67 EVO'
+
+
+def test_extracts_b450_aorus_m_without_matching_z690():
+    from src.model_identification import canonical_listing_model, best_candidate_match
+    candidate=canonical_listing_model('GIGABYTE B450 AORUS M Micro-ATX AM4 Motherboard')
+    assert candidate == 'GIGABYTE B450 AORUS M'
+    key, score, raw=best_candidate_match([candidate,'AORUS'], ['GIGABYTE Z690 AORUS ELITE AX'])
+    assert raw == candidate
+    assert score < 0.82
+
+
+def test_extracts_z370_aorus_gaming_5():
+    from src.model_identification import canonical_listing_model
+    assert canonical_listing_model('Gigabyte Z370 AORUS Gaming 5 ATX Motherboard') == 'GIGABYTE Z370 AORUS GAMING 5'

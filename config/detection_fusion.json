@@ -4,13 +4,16 @@
     "enabled": true,
     "minimum_side": 900,
     "tile_size": 768,
-    "overlap": 0.20
+    "overlap": 0.2
   },
   "geometry": {
     "minimum_area_ratio": 0.0008,
     "maximum_area_ratio": 0.65,
     "socket_minimum_area_ratio": 0.002,
-    "cooler_minimum_area_ratio": 0.01
+    "cooler_minimum_area_ratio": 0.01,
+    "cooler_maximum_area_ratio": 0.22,
+    "cooler_maximum_width_ratio": 0.62,
+    "cooler_maximum_height_ratio": 0.62
   },
   "fusion": {
     "single_image_weight": 1.0,
@@ -18,7 +21,11 @@
     "corroboration_bonus": 0.08,
     "strong_threshold": 0.58,
     "moderate_threshold": 0.46,
-    "conflict_margin": 0.10,
-    "minimum_distinct_images_for_damage": 2
+    "conflict_margin": 0.1,
+    "minimum_distinct_images_for_damage": 2,
+    "cooler_minimum_single_score": 0.58,
+    "cooler_minimum_corroborated_score": 0.52,
+    "empty_socket_override_margin": 0.05,
+    "empty_socket_override_threshold": 0.5
   }
 }

@@ -73,9 +73,13 @@ def best_catalog_match(candidate: str, catalog_keys: Iterable[str]) -> tuple[str
 
 def best_candidate_match(candidates: list[str], catalog_keys: Iterable[str]) -> tuple[str | None, float, str | None]:
     best_key, best_score, best_candidate = None, 0.0, None
-    for candidate in candidates:
+    ordered_candidates = sorted(candidates, key=candidate_specificity, reverse=True)
+    for candidate in ordered_candidates:
+        tokens = set(normalize_text(candidate).split())
+        if tokens and tokens.issubset(GENERIC_MODEL_TOKENS):
+            continue
         key, score = best_catalog_match(candidate, catalog_keys)
-        if key and score > best_score:
+        if key and (score > best_score or (abs(score - best_score) < 0.03 and candidate_specificity(candidate) > candidate_specificity(best_candidate or ""))):
             best_key, best_score, best_candidate = key, score, candidate
     return best_key, best_score, best_candidate
 
@@ -182,6 +186,9 @@ def identify_item(item: dict, catalog: dict, image_paths: list[Path]) -> dict:
     visual_text = "\n".join(ocr_texts)
 
     listing_board_candidates = extract_candidates(seller_text, BOARD_PATTERNS)
+    concise_listing_model = canonical_listing_model(str(item.get("title", ""))) or canonical_listing_model(seller_text)
+    if concise_listing_model:
+        listing_board_candidates = [concise_listing_model] + [candidate for candidate in listing_board_candidates if normalize_text(candidate) != normalize_text(concise_listing_model)]
     visual_board_candidates = extract_candidates(visual_text, BOARD_PATTERNS)
     listing_cpu_candidates = extract_candidates(seller_text, CPU_PATTERNS)
     visual_cpu_candidates = extract_candidates(visual_text, CPU_PATTERNS)
@@ -229,3 +236,38 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
+# Model tokens that are too generic to identify a board by themselves.
+GENERIC_MODEL_TOKENS = {
+    "AORUS", "GAMING", "PRIME", "STRIX", "MAXIMUS", "TOMAHAWK", "MORTAR",
+    "MOTHERBOARD", "ATX", "MICRO-ATX", "MINI-ITX", "DDR4", "DDR5",
+}
+
+
+def canonical_listing_model(text: str) -> str | None:
+    """Extract the concise seller-stated board model without descriptive tail text."""
+    normalized = normalize_text(text)
+    patterns = [
+        r"\b(ASUS)\s+(P[0-9][A-Z0-9-]{2,}(?:\s+EVO|\s+PRO|\s+DELUXE|\s+LE|\s+PLUS)?)\b",
+        r"\b(ASUS)\s+(M[0-9][A-Z0-9-]{2,}(?:\s+PRO(?:\s+USB3)?|\s+EVO)?)\b",
+        r"\b(GIGABYTE)\s+(GA-[A-Z0-9-]+)\b",
+        r"\b(GIGABYTE)\s+([ZBHX][0-9]{3}\s+AORUS\s+(?:GAMING\s+[0-9]+|ELITE(?:\s+AX)?|PRO(?:\s+AX)?|MASTER|M))\b",
+        r"\b(GIGABYTE)\s+(B[0-9]{3}\s+AORUS\s+M)\b",
+        r"\b(ASROCK)\s+(FATAL1TY\s+[ZBHX][0-9]{3}\s+GAMING-ITX(?:\s+AC)?)\b",
+        r"\b(ASROCK)\s+([ZBHX][0-9]{3}\s+STEEL\s+LEGEND)\b",
+        r"\b(MSI)\s+([ZBHX][0-9]{3}[A-Z]?\s+GAMING\s+M[357])\b",
+        r"\b(MSI)\s+([ZBHX][0-9]{3}\s+TOMAHAWK(?:\s+MAX)?)\b",
+        r"\b(ASUS)\s+(B[0-9]{2,3}M-[A-Z0-9]+)\b",
+    ]
+    for pattern in patterns:
+        match = re.search(pattern, normalized)
+        if match:
+            return f"{match.group(1)} {match.group(2)}"
+    return None
+
+
+def candidate_specificity(candidate: str) -> tuple[int, int]:
+    tokens = normalize_text(candidate).split()
+    informative = [token for token in tokens if token not in GENERIC_MODEL_TOKENS]
+    has_chipset = 1 if re.search(r"\b[ZBHXAQCW][0-9]{2,3}\b", normalize_text(candidate)) else 0
+    return (has_chipset * 100 + len(informative), len(candidate))

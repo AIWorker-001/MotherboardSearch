@@ -61,6 +61,16 @@ def geometry_filter(detections: Iterable[Detection], image_size: tuple[int, int]
         minimum = float(config["minimum_area_ratio"])
         if detection.label in COOLERS:
             minimum = max(minimum, float(config["cooler_minimum_area_ratio"]))
+            box_width = max(0.0, detection.box[2] - detection.box[0])
+            box_height = max(0.0, detection.box[3] - detection.box[1])
+            width_ratio = box_width / max(1.0, float(width))
+            height_ratio = box_height / max(1.0, float(height))
+            if ratio > float(config.get("cooler_maximum_area_ratio", config["maximum_area_ratio"])):
+                continue
+            if width_ratio > float(config.get("cooler_maximum_width_ratio", 1.0)):
+                continue
+            if height_ratio > float(config.get("cooler_maximum_height_ratio", 1.0)):
+                continue
         elif detection.label in SOCKET_INSTALLED | SOCKET_EMPTY | {"socket_cover", "bent_socket_pins"}:
             minimum = max(minimum, float(config["socket_minimum_area_ratio"]))
         if minimum <= ratio <= float(config["maximum_area_ratio"]):
@@ -109,11 +119,28 @@ def fused_decision(detections: Iterable[Detection], fusion: dict[str, Any]) -> d
 
     review_reasons: list[str] = []
     conflict = installed_score >= moderate and empty_score >= moderate and abs(installed_score - empty_score) < margin
-    if conflict:
+    empty_override_threshold = float(fusion.get("empty_socket_override_threshold", strong))
+    empty_override_margin = float(fusion.get("empty_socket_override_margin", margin))
+    cooler_single_min = float(fusion.get("cooler_minimum_single_score", strong))
+    cooler_multi_min = float(fusion.get("cooler_minimum_corroborated_score", strong))
+    # Socket evidence is physically primary. A clearly open socket means there is
+    # no CPU and therefore no attached cooler, even if broad visual prompts
+    # produce repeated weak cooler-like detections elsewhere on the board.
+    if empty_score >= empty_override_threshold and empty_score >= installed_score + empty_override_margin:
+        cpu_state = "empty_socket_likely"
+        confidence = empty_score
+        if cooler_score >= moderate:
+            review_reasons.append("cooler_evidence_rejected_by_empty_socket")
+    elif cover_score >= empty_override_threshold and cover_score >= installed_score + empty_override_margin:
+        cpu_state = "socket_cover_likely"
+        confidence = cover_score
+        if cooler_score >= moderate:
+            review_reasons.append("cooler_evidence_rejected_by_socket_cover")
+    elif conflict:
         cpu_state = "unclear"
         confidence = max(installed_score, empty_score)
         review_reasons.append("conflicting_socket_evidence")
-    elif cooler_score >= strong and cooler_images >= 1:
+    elif cooler_score >= cooler_single_min and cooler_images >= 1:
         cpu_state = "cooler_attached_cpu_highly_likely"
         confidence = cooler_score
     elif installed_score >= strong and installed_score >= empty_score + margin:
@@ -122,10 +149,7 @@ def fused_decision(detections: Iterable[Detection], fusion: dict[str, Any]) -> d
     elif empty_score >= strong and empty_score >= installed_score + margin:
         cpu_state = "empty_socket_likely"
         confidence = empty_score
-    elif cover_score >= strong:
-        cpu_state = "socket_cover_likely"
-        confidence = cover_score
-    elif cooler_score >= moderate and cooler_images >= 2:
+    elif cooler_score >= cooler_multi_min and cooler_images >= 2:
         cpu_state = "cooler_attached_cpu_highly_likely"
         confidence = cooler_score
     elif installed_score >= moderate and installed_images >= 2 and installed_score >= empty_score + margin:

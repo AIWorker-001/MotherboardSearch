@@ -41,3 +41,18 @@ def test_tiling_and_geometry_filter():
     normal=d('cpu_installed',0.8,1,(0,0,200,200))
     kept=geometry_filter([tiny,normal],image.size,config)
     assert tiny not in kept and normal in kept
+
+
+def test_rejects_motherboard_sized_cooler_box():
+    config={'minimum_area_ratio':0.001,'maximum_area_ratio':0.65,'socket_minimum_area_ratio':0.002,'cooler_minimum_area_ratio':0.01,'cooler_maximum_area_ratio':0.22,'cooler_maximum_width_ratio':0.62,'cooler_maximum_height_ratio':0.62}
+    huge=d('tower_cpu_cooler',0.9,1,(10,10,1900,900))
+    plausible=d('tower_cpu_cooler',0.8,1,(500,250,1000,750))
+    kept=geometry_filter([huge,plausible],(2000,1400),config)
+    assert huge not in kept
+    assert plausible in kept
+
+
+def test_empty_socket_overrides_weak_cooler_evidence():
+    config={'additional_image_weight':0.35,'corroboration_bonus':0.08,'strong_threshold':0.58,'moderate_threshold':0.46,'conflict_margin':0.10,'minimum_distinct_images_for_damage':2,'cooler_minimum_single_score':0.58,'cooler_minimum_corroborated_score':0.52,'empty_socket_override_threshold':0.50,'empty_socket_override_margin':0.05}
+    result=fused_decision([d('empty_lga_socket',0.72,1),d('tower_cpu_cooler',0.44,2),d('tower_cpu_cooler',0.43,3)],config)
+    assert result['cpu_state']=='empty_socket_likely'
