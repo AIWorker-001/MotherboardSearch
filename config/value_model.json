@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "currency": "USD",
+  "assumptions": {
+    "default_shipping": 18.0,
+    "buyers_premium_rate": 0.0,
+    "target_profit": 60.0,
+    "target_roi": 0.35,
+    "minimum_confidence_for_auto_bid": 0.75
+  },
+  "component_values": {
+    "motherboard_base": 35.0,
+    "cpu_present_unknown": 70.0,
+    "cooler_attached_cpu_bonus": 25.0,
+    "ram_detected": 30.0,
+    "nvme_detected": 25.0,
+    "premium_chipset_bonus": 35.0
+  },
+  "risk_costs": {
+    "unclear_cpu_state": 20.0,
+    "detector_disagreement": 25.0,
+    "possible_physical_damage": 80.0,
+    "empty_socket": 0.0,
+    "socket_cover": 5.0
+  },
+  "chipset_patterns": {
+    "premium": ["Z370", "Z390", "Z490", "Z590", "Z690", "Z790", "X370", "X470", "X570", "X670", "B650", "B550"],
+    "entry": ["H110", "H310", "A320"]
+  }
+}

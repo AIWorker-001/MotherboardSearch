@@ -15,6 +15,8 @@ DETECTOR_FILES = [
     ROOT / "src" / "object_detector.py",
     ROOT / "src" / "phase2_detector.py",
     ROOT / "config" / "detection_classes.json",
+    ROOT / "src" / "value_engine.py",
+    ROOT / "config" / "value_model.json",
     ROOT / "src" / "collect_true_galleries.js",
 ]
 
@@ -51,6 +53,7 @@ def main() -> int:
     phase2_results = output / "phase2_report.json"
     results = output / "new_worker_value_report.json"
     annotated = output / "annotated"
+    value_report = output / "value_report.json"
     search_errors = output / "search_errors.json"
     gallery_errors = output / "gallery_errors.json"
     image_errors = output / "image_download_errors.json"
@@ -121,6 +124,12 @@ def main() -> int:
         "--mode", args.phase2, "--output", str(results),
     ])
     run([
+        sys.executable, "src/value_engine.py",
+        "--listings", str(pending), "--results", str(results),
+        "--model", str(ROOT / "config" / "value_model.json"),
+        "--output", str(value_report),
+    ])
+    run([
         sys.executable, "src/processing_state.py", "merge",
         "--listings", str(pending), "--results", str(results),
         "--state", str(args.state), "--version", version,
@@ -146,6 +155,7 @@ def main() -> int:
         "phase2_model": args.phase2_model if args.phase2 != "off" else None,
         "phase2_report": str(phase2_results) if phase2_results.exists() else None,
         "annotated_dir": str(annotated) if annotated.exists() else None,
+        "value_report": str(value_report) if value_report.exists() else None,
         "state": str(args.state),
     }
     run_report.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")

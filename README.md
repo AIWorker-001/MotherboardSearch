@@ -169,3 +169,39 @@ Alternative modes:
 - `--phase2 only`: spatial detector only; images are downloaded without running legacy inference.
 
 The detector-version fingerprint now includes the Phase 2 source, class configuration, and model orchestration code. Changing any Phase 2 detector logic or class thresholds therefore causes active listings to be reprocessed. Annotated images are written under `output/annotated/`, and the merged results used by the rolling ledger are written to `output/new_worker_value_report.json`.
+
+## Phase 3 expected-value ranking
+
+Phase 3 replaces the raw detector score as the shopping decision layer with a configurable expected-value model.
+
+The value engine combines:
+
+- current bid and shipping parsed from listing metadata
+- optional buyer premium
+- estimated motherboard, CPU, cooler, RAM, and NVMe value
+- premium-chipset adjustments
+- repair and uncertainty risk costs
+- target profit and target ROI
+- detection confidence
+
+It produces:
+
+- acquisition cost
+- estimated gross component value
+- repair-risk adjustment
+- expected net value and profit
+- expected ROI
+- recommended maximum bid
+- `bid`, `pass`, or `review` recommendation
+
+All assumptions are versioned in `config/value_model.json` rather than embedded in code. The normal daily run now writes `output/value_report.json`, sorted by recommendation, expected profit, and confidence.
+
+```bash
+python3 src/value_engine.py \
+  --listings output/pending_listings.json \
+  --results output/new_worker_value_report.json \
+  --model config/value_model.json \
+  --output output/value_report.json
+```
+
+The default component values are intentionally conservative placeholders. They should be calibrated from actual purchase outcomes and current resale data before treating maximum bids as authoritative.
