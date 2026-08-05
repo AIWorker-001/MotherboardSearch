@@ -9,6 +9,7 @@ from PIL import Image
 
 from detection_fusion import fused_decision, generate_tiles, geometry_filter, translate_detection
 from object_detector import DetectionConfig, ZeroShotHardwareDetector, annotate_image, non_max_suppression
+from listing_context import apply_listing_context
 
 
 def main() -> int:
@@ -20,10 +21,12 @@ def main() -> int:
     parser.add_argument("--output", type=Path, default=Path("output/phase2_report.json"))
     parser.add_argument("--annotated-dir", type=Path, default=Path("output/annotated"))
     parser.add_argument("--passes", default="socket_state,cooler,cooler_structure,component,damage", help="Comma-separated detector groups")
+    parser.add_argument("--listing-context-config", type=Path, default=Path("config/listing_context.json"))
     args = parser.parse_args()
 
     config = DetectionConfig.load(args.config)
     fusion_config = json.loads(args.fusion_config.read_text(encoding="utf-8"))
+    listing_context_config = json.loads(args.listing_context_config.read_text(encoding="utf-8"))
     detector = ZeroShotHardwareDetector(config, args.model)
     passes = [value.strip() for value in args.passes.split(",") if value.strip()]
     items = json.loads(args.manifest.read_text(encoding="utf-8"))
@@ -60,6 +63,7 @@ def main() -> int:
                 "passes_evaluated": passes,
             })
         evidence = fused_decision(all_detections, fusion_config["fusion"])
+        evidence = apply_listing_context(evidence, item.get("title", ""), listing_context_config)
         report.append({"item_id": str(item["id"]), "title": item.get("title", ""), **evidence, "images": image_reports})
         print(f"{item['id']} | {evidence['cpu_state']} | confidence={evidence['cpu_confidence']:.3f} | score={evidence['value_score']} review={evidence['needs_review']}")
 
