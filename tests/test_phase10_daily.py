@@ -24,3 +24,9 @@ def test_daily_run_builds_reference_discovery_plan():
     source = Path('src/daily_run.py').read_text(encoding='utf-8')
     assert 'src/reference_discovery.py' in source
     assert 'reference_discovery_plan' in source
+
+
+def test_daily_run_exports_reference_region_crops():
+    source=Path('src/daily_run.py').read_text(encoding='utf-8')
+    assert '--region-output-dir' in source
+    assert 'reference_region_crops' in source

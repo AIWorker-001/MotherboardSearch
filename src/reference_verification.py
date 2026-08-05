@@ -3,9 +3,11 @@ from __future__ import annotations
 import argparse, json
 from pathlib import Path
 try:
-    from .motherboard_kb import load_catalog, verify_model
+    from .motherboard_kb import load_catalog, model_key, verify_model
+    from .reference_regions import projected_regions, write_region_crops
 except ImportError:
-    from motherboard_kb import load_catalog, verify_model
+    from motherboard_kb import load_catalog, model_key, verify_model
+    from reference_regions import projected_regions, write_region_crops
 
 
 def main() -> int:
@@ -14,6 +16,7 @@ def main() -> int:
     parser.add_argument('--cache-dir',type=Path,required=True)
     parser.add_argument('--config',type=Path,default=Path('config/motherboard_kb.json'))
     parser.add_argument('--output',type=Path,required=True)
+    parser.add_argument('--region-output-dir',type=Path)
     args=parser.parse_args()
     config=json.loads(args.config.read_text())
     catalog=load_catalog(Path(config['catalog']))
@@ -24,6 +27,15 @@ def main() -> int:
         images=sorted(args.cache_dir.glob(f"{item['item_id']}_*.jpg"))
         result=verify_model(config,catalog,model,images) if model else {'model':None,'status':'model_unknown','identity_score':0.0,'best_match':None}
         result['item_id']=item['item_id']
+        result['projected_regions']={}
+        result['region_crops']=[]
+        if result.get('status')=='reference_confirmed' and result.get('best_match') and model:
+            board=catalog.get('boards',{}).get(model_key(model),{})
+            regions=projected_regions(board,result['best_match'])
+            result['projected_regions']=regions
+            listing_image=Path(result['best_match']['listing_image'])
+            if args.region_output_dir and regions and listing_image.exists():
+                result['region_crops']=write_region_crops(listing_image,regions,args.region_output_dir/str(item['item_id']))
         result['manual_review_required']=result['status'] in {'reference_conflict','reference_uncertain'}
         result['reference_collection_required']=result['status'] in {'no_reference','reference_conflict','reference_uncertain'}
         rows.append(result)

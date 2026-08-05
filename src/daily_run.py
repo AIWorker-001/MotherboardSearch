@@ -22,6 +22,7 @@ DETECTOR_FILES = [
     ROOT / "src" / "model_identification.py",
     ROOT / "src" / "motherboard_kb.py",
     ROOT / "src" / "reference_verification.py",
+    ROOT / "src" / "reference_regions.py",
     ROOT / "src" / "reference_gap_queue.py",
     ROOT / "src" / "reference_discovery.py",
     ROOT / "src" / "reference_candidates.py",
@@ -82,6 +83,7 @@ def main() -> int:
     value_report = output / "value_report.json"
     identifications = output / "identifications.json"
     reference_verification = output / "reference_verification.json"
+    reference_region_crops = output / "reference_regions"
     reference_gap_queue = output / "reference_gap_queue.json"
     reference_discovery_plan = output / "reference_discovery_plan.json"
     market_pricing = output / "market_pricing.json"
@@ -218,6 +220,7 @@ def main() -> int:
         "--cache-dir", str(cache_dir),
         "--config", str(ROOT / "config" / "motherboard_kb.json"),
         "--output", str(reference_verification),
+        "--region-output-dir", str(reference_region_crops),
     ])
     run([
         sys.executable, "src/reference_gap_queue.py",
@@ -276,6 +279,7 @@ def main() -> int:
         "market_pricing": str(market_pricing) if market_pricing.exists() else None,
         "production_detector_report": str(production_results) if production_results.exists() else None,
         "reference_verification": str(reference_verification) if reference_verification.exists() else None,
+        "reference_region_crops": str(reference_region_crops) if reference_region_crops.exists() else None,
         "reference_gap_queue": str(reference_gap_queue) if reference_gap_queue.exists() else None,
         "reference_discovery_plan": str(reference_discovery_plan) if reference_discovery_plan.exists() else None,
         "inference_monitoring": str(monitoring_report) if monitoring_report.exists() else None,
