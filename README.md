@@ -448,3 +448,23 @@ The motherboard knowledge base remains application-owned, but its binary images 
 ```
 
 No motherboard-specific behavior is added to the coordinator. MotherboardSearch supplies free-form object metadata and owns all model, source, approval, and matching semantics.
+
+### Reference candidate intake and review
+
+Reference acquisition now has a repeatable candidate workflow. A manifest may contain local files or approved image URLs together with the stated model and source type. The system downloads and validates each image, extracts ORB features, compares candidates that claim the same board model, and produces an approval recommendation.
+
+```bash
+python3 src/reference_candidates.py prepare \
+  --manifest data/motherboard_kb/candidate_manifest.json \
+  --output data/motherboard_kb/prepared_candidates.json
+
+python3 src/reference_candidates.py review \
+  --candidates data/motherboard_kb/prepared_candidates.json \
+  --output data/motherboard_kb/reviewed_candidates.json
+
+python3 src/reference_candidates.py approve \
+  --reviewed data/motherboard_kb/reviewed_candidates.json \
+  --approve-recommended
+```
+
+Manufacturer, review-site, and verified ShopGoodwill references may be recommended for approval when multiple independent images agree. Marketplace sources such as eBay always remain subject to manual approval even when their images agree. Conflicting or isolated candidates are retained for review rather than silently entering the knowledge base.

@@ -37,5 +37,14 @@
     "cache_root": "data/motherboard_kb/cache",
     "coordinator_url": "",
     "token_env": "AIW_COORDINATOR_TOKEN"
+  },
+  "candidate_review": {
+    "minimum_pair_score": 0.52,
+    "minimum_agreeing_candidates": 2,
+    "automatic_approval_source_types": [
+      "manufacturer",
+      "review_site",
+      "shopgoodwill_verified"
+    ]
   }
 }
