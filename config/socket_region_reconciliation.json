@@ -1,0 +1,5 @@
+{
+  "schema_version": 1,
+  "minimum_reference_identity_score": 0.58,
+  "minimum_focused_confidence": 0.50
+}

@@ -517,3 +517,11 @@ python3 src/reference_regions.py set \
 ```
 
 When reference verification succeeds, the daily pipeline writes projected polygons, tight component crops, and full-image overlays under `output/reference_regions/<item-id>/`. The CPU detector can therefore inspect the known socket location rather than searching the entire motherboard photograph. If alignment is uncertain or the board identity conflicts, no region is projected and the listing remains in human review.
+
+### Reference-focused socket detection and reconciliation
+
+After board identity and alignment are confirmed, the daily pipeline now runs a second detector pass only on the projected `cpu_socket` crop. This focused pass evaluates socket state, cooler structure, and socket damage at a lower search threshold because unrelated board regions have already been excluded.
+
+`reconcile_socket_results.py` allows the focused result to override the full-image detector only when both the board identity score and focused socket confidence exceed configured thresholds. The original full-image state and confidence remain in the audit record. Low-confidence crops, missing regions, and weak board matches cannot override the original result and are routed to review.
+
+This specifically addresses false full-image cooler detections: a fan, fan filter, or motherboard heatsink outside the known socket polygon can no longer determine CPU presence once a reliable board template is available.

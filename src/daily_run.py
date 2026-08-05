@@ -23,6 +23,9 @@ DETECTOR_FILES = [
     ROOT / "src" / "motherboard_kb.py",
     ROOT / "src" / "reference_verification.py",
     ROOT / "src" / "reference_regions.py",
+    ROOT / "src" / "socket_region_detector.py",
+    ROOT / "src" / "reconcile_socket_results.py",
+    ROOT / "config" / "socket_region_reconciliation.json",
     ROOT / "src" / "reference_gap_queue.py",
     ROOT / "src" / "reference_discovery.py",
     ROOT / "src" / "reference_candidates.py",
@@ -84,6 +87,9 @@ def main() -> int:
     identifications = output / "identifications.json"
     reference_verification = output / "reference_verification.json"
     reference_region_crops = output / "reference_regions"
+    socket_region_results = output / "socket_region_report.json"
+    socket_region_annotated = output / "socket_region_annotated"
+    reconciled_results = output / "reconciled_detector_report.json"
     reference_gap_queue = output / "reference_gap_queue.json"
     reference_discovery_plan = output / "reference_discovery_plan.json"
     market_pricing = output / "market_pricing.json"
@@ -203,12 +209,6 @@ def main() -> int:
     rollback_recommended = bool(monitoring.get("drift_detected"))
     results = production_results
     run([
-        sys.executable, "src/value_engine.py",
-        "--listings", str(pending), "--results", str(results),
-        "--model", str(ROOT / "config" / "value_model.json"),
-        "--output", str(value_report),
-    ])
-    run([
         sys.executable, "src/model_identification.py",
         "--listings", str(pending), "--cache-dir", str(cache_dir),
         "--catalog", str(ROOT / "config" / "market_values.json"),
@@ -221,6 +221,29 @@ def main() -> int:
         "--config", str(ROOT / "config" / "motherboard_kb.json"),
         "--output", str(reference_verification),
         "--region-output-dir", str(reference_region_crops),
+    ])
+    run([
+        sys.executable, "src/socket_region_detector.py",
+        "--verification", str(reference_verification),
+        "--config", str(ROOT / "config" / "detection_classes.json"),
+        "--fusion-config", str(ROOT / "config" / "detection_fusion.json"),
+        "--model", args.phase2_model,
+        "--output", str(socket_region_results),
+        "--annotated-dir", str(socket_region_annotated),
+    ])
+    run([
+        sys.executable, "src/reconcile_socket_results.py",
+        "--base-results", str(production_results),
+        "--focused-results", str(socket_region_results),
+        "--config", str(ROOT / "config" / "socket_region_reconciliation.json"),
+        "--output", str(reconciled_results),
+    ])
+    results = reconciled_results
+    run([
+        sys.executable, "src/value_engine.py",
+        "--listings", str(pending), "--results", str(results),
+        "--model", str(ROOT / "config" / "value_model.json"),
+        "--output", str(value_report),
     ])
     run([
         sys.executable, "src/reference_gap_queue.py",
@@ -280,6 +303,8 @@ def main() -> int:
         "production_detector_report": str(production_results) if production_results.exists() else None,
         "reference_verification": str(reference_verification) if reference_verification.exists() else None,
         "reference_region_crops": str(reference_region_crops) if reference_region_crops.exists() else None,
+        "socket_region_report": str(socket_region_results) if socket_region_results.exists() else None,
+        "reconciled_detector_report": str(reconciled_results) if reconciled_results.exists() else None,
         "reference_gap_queue": str(reference_gap_queue) if reference_gap_queue.exists() else None,
         "reference_discovery_plan": str(reference_discovery_plan) if reference_discovery_plan.exists() else None,
         "inference_monitoring": str(monitoring_report) if monitoring_report.exists() else None,
