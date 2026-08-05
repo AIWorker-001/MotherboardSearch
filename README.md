@@ -525,3 +525,18 @@ After board identity and alignment are confirmed, the daily pipeline now runs a 
 `reconcile_socket_results.py` allows the focused result to override the full-image detector only when both the board identity score and focused socket confidence exceed configured thresholds. The original full-image state and confidence remain in the audit record. Low-confidence crops, missing regions, and weak board matches cannot override the original result and are routed to review.
 
 This specifically addresses false full-image cooler detections: a fan, fan filter, or motherboard heatsink outside the known socket polygon can no longer determine CPU presence once a reliable board template is available.
+
+### Board-layout regions and socket-focused crops
+
+Approved board records can now store normalized component polygons such as `cpu_socket`, `dimm_slots`, and `m2_slots`. Regions are defined against a clean reference image and are projected into a verified listing photo with the reference homography.
+
+```bash
+python3 src/reference_regions.py set \
+  --model "GIGABYTE Z370 AORUS Gaming 5" \
+  --name cpu_socket \
+  --points '[[420,250],[760,250],[760,590],[420,590]]' \
+  --reference-width 1200 \
+  --reference-height 900
+```
+
+When reference verification succeeds, the daily pipeline writes projected polygons, tight component crops, and full-image overlays under `output/reference_regions/<item-id>/`. The CPU detector can therefore inspect the known socket location rather than searching the entire motherboard photograph. If alignment is uncertain or the board identity conflicts, no region is projected and the listing remains in human review.

@@ -37,3 +37,9 @@ def test_daily_run_reconciles_reference_socket_detection_before_valuation():
     assert 'src/socket_region_detector.py' in source
     assert 'src/reconcile_socket_results.py' in source
     assert source.index('src/reconcile_socket_results.py') < source.index('src/value_engine.py', source.index('src/reconcile_socket_results.py'))
+
+
+def test_daily_run_exports_reference_region_crops():
+    source=Path('src/daily_run.py').read_text(encoding='utf-8')
+    assert '--region-output-dir' in source
+    assert 'reference_region_crops' in source

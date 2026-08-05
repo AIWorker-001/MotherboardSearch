@@ -23,6 +23,7 @@ DETECTOR_FILES = [
     ROOT / "src" / "motherboard_kb.py",
     ROOT / "src" / "reference_verification.py",
     ROOT / "src" / "reference_regions.py",
+    ROOT / "src" / "reference_regions.py",
     ROOT / "src" / "socket_region_detector.py",
     ROOT / "src" / "reconcile_socket_results.py",
     ROOT / "config" / "socket_region_reconciliation.json",
@@ -86,6 +87,7 @@ def main() -> int:
     value_report = output / "value_report.json"
     identifications = output / "identifications.json"
     reference_verification = output / "reference_verification.json"
+    reference_region_crops = output / "reference_regions"
     reference_region_crops = output / "reference_regions"
     socket_region_results = output / "socket_region_report.json"
     socket_region_annotated = output / "socket_region_annotated"
@@ -302,6 +304,7 @@ def main() -> int:
         "market_pricing": str(market_pricing) if market_pricing.exists() else None,
         "production_detector_report": str(production_results) if production_results.exists() else None,
         "reference_verification": str(reference_verification) if reference_verification.exists() else None,
+        "reference_region_crops": str(reference_region_crops) if reference_region_crops.exists() else None,
         "reference_region_crops": str(reference_region_crops) if reference_region_crops.exists() else None,
         "socket_region_report": str(socket_region_results) if socket_region_results.exists() else None,
         "reconciled_detector_report": str(reconciled_results) if reconciled_results.exists() else None,
