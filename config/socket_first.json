@@ -1,0 +1,7 @@
+{
+  "schema_version": 1,
+  "localization_threshold": 0.16,
+  "minimum_socket_area_ratio": 0.006,
+  "maximum_socket_area_ratio": 0.32,
+  "crop_padding": 0.20
+}

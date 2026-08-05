@@ -160,6 +160,38 @@
       ],
       "threshold": 0.34,
       "group": "cooler_structure"
+    },
+    "intel_lga_socket": {
+      "queries": [
+        "Intel LGA CPU socket retention frame on motherboard",
+        "rectangular Intel processor socket with metal load plate"
+      ],
+      "threshold": 0.26,
+      "group": "socket_locator"
+    },
+    "amd_cpu_socket": {
+      "queries": [
+        "AMD AM4 or AM5 CPU socket on motherboard",
+        "square AMD processor socket with retention brackets"
+      ],
+      "threshold": 0.26,
+      "group": "socket_locator"
+    },
+    "cpu_socket_region": {
+      "queries": [
+        "CPU processor socket region between memory slots and rear ports",
+        "motherboard CPU socket area"
+      ],
+      "threshold": 0.28,
+      "group": "socket_locator"
+    },
+    "mounted_cpu_cooler_region": {
+      "queries": [
+        "CPU cooler mounted over the processor socket on motherboard",
+        "CPU fan and heatsink assembly covering motherboard socket"
+      ],
+      "threshold": 0.28,
+      "group": "socket_locator"
     }
   }
 }

@@ -540,3 +540,16 @@ python3 src/reference_regions.py set \
 ```
 
 When reference verification succeeds, the daily pipeline writes projected polygons, tight component crops, and full-image overlays under `output/reference_regions/<item-id>/`. The CPU detector can therefore inspect the known socket location rather than searching the entire motherboard photograph. If alignment is uncertain or the board identity conflicts, no region is projected and the listing remains in human review.
+
+## Socket-first detection
+
+`socket_first_detector.py` separates socket localization from socket-state classification. It first searches the full motherboard image only for an Intel socket, AMD socket, generic socket region, or a cooler covering the socket. It then crops that region and runs CPU/socket/cooler classification exclusively inside the crop. This prevents unrelated case fans, chipset heatsinks, and fan filters elsewhere in the photo from controlling the CPU decision.
+
+```bash
+python3 src/socket_first_detector.py \
+  --manifest output/accuracy-test/manifest.json \
+  --output output/accuracy-test/socket-first.json \
+  --artifact-dir output/accuracy-test/socket-first-artifacts
+```
+
+The report records whether the socket was located, the localization class and bounding box, the focused crop, an overlay, the socket state, and the evidence used. `socket_not_found` is an explicit review state rather than a guessed CPU decision.

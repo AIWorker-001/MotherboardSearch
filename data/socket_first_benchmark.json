@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "items": [
+    {"item_id":"271935755","expected_socket_state":"cooler_obscured","expected_cpu_state":"cooler_attached_cpu_highly_likely"},
+    {"item_id":"272495610","expected_socket_state":"empty_amd_socket","expected_cpu_state":"empty_socket_likely"},
+    {"item_id":"272499468","expected_socket_state":"empty_intel_lga_socket","expected_cpu_state":"empty_socket_likely"}
+  ]
+}

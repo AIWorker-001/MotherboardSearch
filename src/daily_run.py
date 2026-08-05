@@ -27,6 +27,8 @@ DETECTOR_FILES = [
     ROOT / "src" / "reference_regions.py",
     ROOT / "src" / "reference_regions.py",
     ROOT / "src" / "socket_region_detector.py",
+    ROOT / "src" / "socket_first_detector.py",
+    ROOT / "config" / "socket_first.json",
     ROOT / "src" / "reconcile_socket_results.py",
     ROOT / "config" / "socket_region_reconciliation.json",
     ROOT / "src" / "reference_gap_queue.py",
