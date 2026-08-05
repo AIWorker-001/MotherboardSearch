@@ -430,3 +430,21 @@ python3 src/motherboard_kb.py verify --model "ASUS P8P67 EVO" --images output/ca
 ```
 
 The knowledge base stores image files and generated features outside source code. The catalog records provenance, trust, hashes, revision, approval, and component-region metadata. Once a board is geometrically aligned, stored socket/DIMM/M.2 polygons can be projected into the listing image for focused component inspection.
+
+### Generic coordinator storage backend
+
+The motherboard knowledge base remains application-owned, but its binary images and feature descriptors may use the AICoordinator's generic project/namespace object store. Set `storage.backend` to `coordinator` in `config/motherboard_kb.json`, provide `coordinator_url` (or `AIW_COORDINATOR_URL`), and provide the coordinator token through the configured environment variable. The catalog continues to live in the MotherboardSearch repository while binary objects are deduplicated and quota-managed by the coordinator.
+
+```json
+{
+  "storage": {
+    "backend": "coordinator",
+    "project": "MotherboardSearch",
+    "namespace": "motherboard-kb",
+    "coordinator_url": "https://coordinator.example.com",
+    "token_env": "AIW_COORDINATOR_TOKEN"
+  }
+}
+```
+
+No motherboard-specific behavior is added to the coordinator. MotherboardSearch supplies free-form object metadata and owns all model, source, approval, and matching semantics.

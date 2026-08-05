@@ -30,3 +30,19 @@ def test_reference_match_and_projection(tmp_path):
 def test_missing_reference_routes_safely():
     result=verify_model({'matching':{}},{'boards':{}},'ASUS P8P67 EVO',[])
     assert result['status']=='no_reference'
+
+
+def test_reference_catalog_records_storage_objects(tmp_path):
+    from src.motherboard_kb import add_reference, load_catalog
+    image=tmp_path/'ref.jpg'; patterned(image)
+    config={
+        'reference_root':str(tmp_path/'references'),
+        'feature_root':str(tmp_path/'features'),
+        'storage':{'backend':'local','cache_root':str(tmp_path/'cache')},
+        'sources':{'manufacturer':{'trust':1.0,'requires_manual_approval':False}},
+    }
+    catalog_path=tmp_path/'catalog.json'
+    record=add_reference(config,catalog_path,model='Test Board Z370',source_type='manufacturer',source=str(image),approved=False)
+    assert record['image_object']['backend']=='local'
+    assert record['feature_object']['backend']=='local'
+    assert load_catalog(catalog_path)['boards']['TEST-BOARD-Z370']['references'][0]['feature_object']

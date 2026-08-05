@@ -11,6 +11,11 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+try:
+    from .knowledge_storage import KnowledgeStorage
+except ImportError:
+    from knowledge_storage import KnowledgeStorage
+
 import cv2
 import numpy as np
 
@@ -99,12 +104,22 @@ def add_reference(
     feature_path = Path(config['feature_root']) / key / f'{reference_id}.npz'
     acquire_image(source, image_path)
     features = serialize_features(image_path, feature_path)
+    storage = KnowledgeStorage(config.get('storage', {'backend': 'local'}))
+    common_metadata = {
+        'model': model,
+        'model_key': key,
+        'reference_id': reference_id,
+        'source_type': source_type,
+        'revision': revision,
+    }
+    image_object = storage.put(image_path, metadata={**common_metadata, 'kind': 'reference_image'}, content_type='image/jpeg')
+    feature_object = storage.put(feature_path, metadata={**common_metadata, 'kind': 'orb_features'}, content_type='application/x-npz')
     record = {
         'id': reference_id, 'source_type': source_type, 'source': source,
         'trust': float(source_policy['trust']), 'approved': approved or not source_policy.get('requires_manual_approval'),
         'revision': revision, 'image': str(image_path), 'sha256': sha256(image_path),
-        'feature_file': str(feature_path), 'keypoints': features['keypoints'],
-        'size': features['size'], 'added_at': now_iso(),
+        'feature_file': str(feature_path), 'image_object': image_object, 'feature_object': feature_object,
+        'keypoints': features['keypoints'], 'size': features['size'], 'added_at': now_iso(),
     }
     board['references'] = [row for row in board['references'] if row['id'] != reference_id] + [record]
     save_catalog(catalog_path, catalog)
@@ -116,9 +131,14 @@ def load_features(path: Path) -> tuple[np.ndarray, np.ndarray, tuple[int, int]]:
     return data['points'], data['descriptors'], tuple(int(v) for v in data['size'])
 
 
-def match_reference(query_path: Path, reference: dict[str, Any], ratio_test: float) -> dict[str, Any]:
+def match_reference(query_path: Path, reference: dict[str, Any], ratio_test: float, storage: KnowledgeStorage | None = None) -> dict[str, Any]:
     query_kp, query_desc, query_size = extract_features(query_path)
-    ref_points, ref_desc, ref_size = load_features(Path(reference['feature_file']))
+    if reference.get('feature_object'):
+        storage = storage or KnowledgeStorage({'backend': 'local'})
+        feature_path = storage.materialize(reference['feature_object'], suffix='.npz')
+    else:
+        feature_path = Path(reference['feature_file'])
+    ref_points, ref_desc, ref_size = load_features(feature_path)
     if query_desc is None or len(query_desc) < 4 or len(ref_desc) < 4:
         return {'score': 0.0, 'good_matches': 0, 'inlier_ratio': 0.0, 'homography': None}
     matcher = cv2.BFMatcher(cv2.NORM_HAMMING)
@@ -150,11 +170,12 @@ def verify_model(config: dict[str, Any], catalog: dict[str, Any], model: str, im
     if not board or not board.get('references'):
         return {'model': model, 'status': 'no_reference', 'identity_score': 0.0, 'best_match': None}
     results = []
+    storage = KnowledgeStorage(config.get('storage', {'backend': 'local'}))
     for image in images:
         for reference in board['references'][: int(config['matching']['maximum_references_per_model'])]:
             if not reference.get('approved', False):
                 continue
-            match = match_reference(image, reference, float(config['matching']['ratio_test']))
+            match = match_reference(image, reference, float(config['matching']['ratio_test']), storage)
             results.append({'listing_image': str(image), 'reference_id': reference['id'], 'source_type': reference['source_type'], **match})
     best = max(results, key=lambda row: row['score'], default=None)
     score = float(best['score']) if best else 0.0
