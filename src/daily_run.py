@@ -22,6 +22,9 @@ DETECTOR_FILES = [
     ROOT / "src" / "model_identification.py",
     ROOT / "src" / "motherboard_kb.py",
     ROOT / "src" / "reference_verification.py",
+    ROOT / "src" / "reference_gap_queue.py",
+    ROOT / "src" / "reference_candidates.py",
+    ROOT / "src" / "knowledge_storage.py",
     ROOT / "config" / "motherboard_kb.json",
     ROOT / "src" / "market_pricing.py",
     ROOT / "src" / "phase4_enrichment.py",
@@ -78,6 +81,7 @@ def main() -> int:
     value_report = output / "value_report.json"
     identifications = output / "identifications.json"
     reference_verification = output / "reference_verification.json"
+    reference_gap_queue = output / "reference_gap_queue.json"
     market_pricing = output / "market_pricing.json"
     phase4_report = output / "phase4_value_report.json"
     search_errors = output / "search_errors.json"
@@ -214,6 +218,13 @@ def main() -> int:
         "--output", str(reference_verification),
     ])
     run([
+        sys.executable, "src/reference_gap_queue.py",
+        "--identifications", str(identifications),
+        "--verification", str(reference_verification),
+        "--cache-dir", str(cache_dir),
+        "--output", str(reference_gap_queue),
+    ])
+    run([
         sys.executable, "src/market_pricing.py",
         "--identifications", str(identifications),
         "--catalog", str(ROOT / "config" / "market_values.json"),
@@ -257,6 +268,7 @@ def main() -> int:
         "market_pricing": str(market_pricing) if market_pricing.exists() else None,
         "production_detector_report": str(production_results) if production_results.exists() else None,
         "reference_verification": str(reference_verification) if reference_verification.exists() else None,
+        "reference_gap_queue": str(reference_gap_queue) if reference_gap_queue.exists() else None,
         "inference_monitoring": str(monitoring_report) if monitoring_report.exists() else None,
         "rollback_recommended": rollback_recommended,
         "rollback_reasons": monitoring.get("drift_reasons", []),

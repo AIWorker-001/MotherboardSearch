@@ -12,3 +12,9 @@ def test_phase2_uses_specialized_detector_passes():
     source = Path('src/phase2_detector.py').read_text(encoding='utf-8')
     assert '--passes' in source
     assert 'groups={detector_group}' in source
+
+
+def test_daily_run_builds_reference_gap_queue():
+    source = Path('src/daily_run.py').read_text(encoding='utf-8')
+    assert 'src/reference_gap_queue.py' in source
+    assert 'reference_gap_queue' in source

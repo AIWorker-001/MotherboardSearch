@@ -468,3 +468,21 @@ python3 src/reference_candidates.py approve \
 ```
 
 Manufacturer, review-site, and verified ShopGoodwill references may be recommended for approval when multiple independent images agree. Marketplace sources such as eBay always remain subject to manual approval even when their images agree. Conflicting or isolated candidates are retained for review rather than silently entering the knowledge base.
+
+### Automatic reference-gap queue
+
+Every daily run now converts `no_reference`, `reference_uncertain`, and `reference_conflict` results into `output/reference_gap_queue.json`. Each queue record contains the stated model, listing images, verification state, human-review requirement, and source-specific search queries for manufacturer, review-site, and marketplace references.
+
+The daily run does not silently scrape or approve third-party images. A human can review a queued ShopGoodwill listing and explicitly turn its images into a `shopgoodwill_verified` candidate manifest:
+
+```bash
+python3 src/reference_gap_queue.py \
+  --identifications output/identifications.json \
+  --verification output/reference_verification.json \
+  --cache-dir output/cache/<detector-version> \
+  --output output/reference_gap_queue.json \
+  --approved-item-id 123456789 \
+  --candidate-output data/motherboard_kb/candidate_manifest.json
+```
+
+The resulting manifest then flows through `reference_candidates.py prepare`, `review`, and `approve`. This keeps model discovery automatic while preserving explicit human approval for listing-derived reference images and marketplace sources.

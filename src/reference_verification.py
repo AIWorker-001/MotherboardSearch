@@ -25,6 +25,7 @@ def main() -> int:
         result=verify_model(config,catalog,model,images) if model else {'model':None,'status':'model_unknown','identity_score':0.0,'best_match':None}
         result['item_id']=item['item_id']
         result['manual_review_required']=result['status'] in {'reference_conflict','reference_uncertain'}
+        result['reference_collection_required']=result['status'] in {'no_reference','reference_conflict','reference_uncertain'}
         rows.append(result)
     args.output.parent.mkdir(parents=True,exist_ok=True)
     args.output.write_text(json.dumps(rows,indent=2)+'\n')
