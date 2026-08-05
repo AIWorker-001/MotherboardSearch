@@ -486,3 +486,19 @@ python3 src/reference_gap_queue.py \
 ```
 
 The resulting manifest then flows through `reference_candidates.py prepare`, `review`, and `approve`. This keeps model discovery automatic while preserving explicit human approval for listing-derived reference images and marketplace sources.
+
+### Trusted reference discovery plans
+
+The daily pipeline now turns the reference-gap queue into `output/reference_discovery_plan.json`. This plan is provider-neutral: any authorized search service or human browser can execute its queries and return structured results containing `item_id`, `page_url`, `image_url`, and `title`.
+
+`reference_discovery.py ingest` applies project-owned safety rules before an image enters the candidate workflow. It accepts only configured manufacturer, review-site, and marketplace domains; requires the claimed model tokens to appear in the title or URLs; deduplicates image URLs; and records rejected results with reasons. eBay results remain manually approved regardless of model-token agreement.
+
+```bash
+python3 src/reference_discovery.py ingest \
+  --gap-queue output/reference_gap_queue.json \
+  --results output/reference_search_results.json \
+  --candidate-output data/motherboard_kb/candidate_manifest.json \
+  --rejected-output output/reference_discovery_rejected.json
+```
+
+The discovery layer deliberately does not hard-code a search engine, bypass site controls, or approve third-party content. It creates a stable contract between search/discovery providers and the existing prepare/review/approve pipeline.

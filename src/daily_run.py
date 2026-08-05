@@ -23,6 +23,7 @@ DETECTOR_FILES = [
     ROOT / "src" / "motherboard_kb.py",
     ROOT / "src" / "reference_verification.py",
     ROOT / "src" / "reference_gap_queue.py",
+    ROOT / "src" / "reference_discovery.py",
     ROOT / "src" / "reference_candidates.py",
     ROOT / "src" / "knowledge_storage.py",
     ROOT / "config" / "motherboard_kb.json",
@@ -82,6 +83,7 @@ def main() -> int:
     identifications = output / "identifications.json"
     reference_verification = output / "reference_verification.json"
     reference_gap_queue = output / "reference_gap_queue.json"
+    reference_discovery_plan = output / "reference_discovery_plan.json"
     market_pricing = output / "market_pricing.json"
     phase4_report = output / "phase4_value_report.json"
     search_errors = output / "search_errors.json"
@@ -225,6 +227,12 @@ def main() -> int:
         "--output", str(reference_gap_queue),
     ])
     run([
+        sys.executable, "src/reference_discovery.py", "plan",
+        "--gap-queue", str(reference_gap_queue),
+        "--config", str(ROOT / "config" / "motherboard_kb.json"),
+        "--output", str(reference_discovery_plan),
+    ])
+    run([
         sys.executable, "src/market_pricing.py",
         "--identifications", str(identifications),
         "--catalog", str(ROOT / "config" / "market_values.json"),
@@ -269,6 +277,7 @@ def main() -> int:
         "production_detector_report": str(production_results) if production_results.exists() else None,
         "reference_verification": str(reference_verification) if reference_verification.exists() else None,
         "reference_gap_queue": str(reference_gap_queue) if reference_gap_queue.exists() else None,
+        "reference_discovery_plan": str(reference_discovery_plan) if reference_discovery_plan.exists() else None,
         "inference_monitoring": str(monitoring_report) if monitoring_report.exists() else None,
         "rollback_recommended": rollback_recommended,
         "rollback_reasons": monitoring.get("drift_reasons", []),

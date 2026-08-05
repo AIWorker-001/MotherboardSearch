@@ -46,5 +46,32 @@
       "review_site",
       "shopgoodwill_verified"
     ]
+  },
+  "discovery": {
+    "maximum_results_per_query": 8,
+    "minimum_model_token_ratio": 0.6,
+    "source_domains": {
+      "manufacturer": [
+        "asus.com",
+        "gigabyte.com",
+        "msi.com",
+        "asrock.com",
+        "biostar.com.tw",
+        "evga.com",
+        "supermicro.com",
+        "intel.com"
+      ],
+      "review_site": [
+        "anandtech.com",
+        "tomshardware.com",
+        "techpowerup.com",
+        "kitguru.net",
+        "hardwarecanucks.com",
+        "tweaktown.com"
+      ]
+    },
+    "marketplace_domains": [
+      "ebay.com"
+    ]
   }
 }
