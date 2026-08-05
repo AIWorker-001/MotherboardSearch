@@ -553,3 +553,7 @@ python3 src/socket_first_detector.py \
 ```
 
 The report records whether the socket was located, the localization class and bounding box, the focused crop, an overlay, the socket state, and the evidence used. `socket_not_found` is an explicit review state rather than a guessed CPU decision.
+
+### Rectangle-and-pin geometry fast path
+
+The socket-first detector now runs a deterministic empty-LGA fast path before learned localization when the listing indicates an Intel platform and does not mention an installed cooler. It searches for socket-sized quadrilaterals, then scores edge density, balanced horizontal/vertical structure, center-window contrast, square geometry, and repeated pin/contact texture. A positive result classifies the board as `empty_socket_likely` and records the candidate metrics and diagnostic overlay. Cooler-titled listings are excluded from this fast path to prevent heatsink or fan structures from being mistaken for exposed pins.

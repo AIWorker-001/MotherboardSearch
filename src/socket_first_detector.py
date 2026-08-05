@@ -11,11 +11,13 @@ from PIL import Image, ImageDraw
 
 try:
     from .detection_fusion import fused_decision, geometry_filter
-    from .listing_context import apply_listing_context
+    from .listing_context import apply_listing_context, platform_hint, title_cooler_evidence
+    from .socket_geometry import detect_empty_lga
     from .object_detector import Detection, DetectionConfig, ZeroShotHardwareDetector, non_max_suppression
 except ImportError:
     from detection_fusion import fused_decision, geometry_filter
-    from listing_context import apply_listing_context
+    from listing_context import apply_listing_context, platform_hint, title_cooler_evidence
+    from socket_geometry import detect_empty_lga
     from object_detector import Detection, DetectionConfig, ZeroShotHardwareDetector, non_max_suppression
 
 SOCKET_LOCATOR_LABELS = {'intel_lga_socket', 'amd_cpu_socket', 'cpu_socket_region'}
@@ -91,12 +93,34 @@ def detect_item(
     socket_config: dict[str, Any],
     listing_context_config: dict[str, Any],
     output_dir: Path,
+    geometry_config: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     image_results = []
     focused_evidence = []
     for index, filename in enumerate(item.get('images', []), start=1):
         path = Path(filename)
         image = Image.open(path).convert('RGB')
+        title = str(item.get('title') or '')
+        geometry = None
+        if geometry_config and platform_hint(title) == 'intel' and not title_cooler_evidence(title):
+            geometry_artifact = output_dir / str(item['id']) / f'{index:02d}-geometry.jpg'
+            geometry = detect_empty_lga(path, geometry_config, geometry_artifact)
+            if geometry.get('detected'):
+                image_results.append({
+                    'image': str(path),
+                    'status': 'socket_classified_geometry',
+                    'geometry': geometry,
+                })
+                focused_evidence.append({
+                    'cpu_state': 'empty_socket_likely',
+                    'cpu_confidence': float(geometry['confidence']),
+                    'value_score': -100,
+                    'needs_review': float(geometry['confidence']) < float(geometry_config.get('auto_accept_score', .68)),
+                    'review_reasons': ['empty_lga_confirmed_by_rectangle_pin_geometry'],
+                    'localization_source': 'rectangle_pin_geometry',
+                    'maxima': {'geometry_empty_lga': float(geometry['confidence'])},
+                })
+                continue
         locator_rows = detector.detect(image, image_index=index, threshold=float(socket_config.get('localization_threshold', 0.18)), groups={'socket_locator'})
         locator_rows = non_max_suppression(locator_rows, iou_threshold=0.35)
         localization = best_localization(locator_rows, image.size, socket_config)
@@ -150,7 +174,7 @@ def detect_item(
         'item_id': str(item['id']),
         'title': item.get('title', ''),
         'detector_source': 'socket_first',
-        'socket_localized_images': sum(row['status'] == 'socket_classified' for row in image_results),
+        'socket_localized_images': sum(row['status'] in {'socket_classified', 'socket_classified_geometry'} for row in image_results),
         'images_evaluated': len(image_results),
         **{key: value for key, value in final.items() if key not in {'detections'}},
         'images': image_results,
@@ -164,6 +188,7 @@ def main() -> int:
     parser.add_argument('--fusion-config', type=Path, default=Path('config/detection_fusion.json'))
     parser.add_argument('--socket-config', type=Path, default=Path('config/socket_first.json'))
     parser.add_argument('--listing-context-config', type=Path, default=Path('config/listing_context.json'))
+    parser.add_argument('--geometry-config', type=Path, default=Path('config/socket_geometry.json'))
     parser.add_argument('--model', default='IDEA-Research/grounding-dino-tiny')
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--artifact-dir', type=Path, required=True)
@@ -172,8 +197,9 @@ def main() -> int:
     fusion_config = json.loads(args.fusion_config.read_text(encoding='utf-8'))
     socket_config = json.loads(args.socket_config.read_text(encoding='utf-8'))
     listing_context_config = json.loads(args.listing_context_config.read_text(encoding='utf-8'))
+    geometry_config = json.loads(args.geometry_config.read_text(encoding='utf-8'))
     items = json.loads(args.manifest.read_text(encoding='utf-8'))
-    rows = [detect_item(item, detector, fusion_config, socket_config, listing_context_config, args.artifact_dir) for item in items]
+    rows = [detect_item(item, detector, fusion_config, socket_config, listing_context_config, args.artifact_dir, geometry_config) for item in items]
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(rows, indent=2) + '\n', encoding='utf-8')
     print(json.dumps({'items': len(rows), 'socket_found': sum(row['socket_localized_images'] > 0 for row in rows)}))

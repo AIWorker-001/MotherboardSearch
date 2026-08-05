@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "canny_low": 55,
+  "canny_high": 150,
+  "minimum_area_ratio": 0.006,
+  "maximum_area_ratio": 0.09,
+  "maximum_candidates": 20,
+  "minimum_empty_lga_score": 0.55,
+  "minimum_periodic_pin_score": 0.32,
+  "auto_accept_score": 0.68
+}
