@@ -416,3 +416,17 @@ Motherboard identification now treats the seller's stated model as the primary c
 - `visually_identified`: no usable seller model, so OCR supplied the model
 
 The output includes an audit record with both candidates, catalog matches, match scores, and agreement. This makes direct comparison against human review possible.
+
+## Motherboard Knowledge Base and reference verification
+
+The detector now supports a separately versioned Motherboard Knowledge Base (MKB). Each exact board model may contain aliases, revision metadata, known component regions, and multiple reference images with source provenance. Manufacturer and established review-site images receive the highest trust. eBay references are allowed but require explicit approval and are intended to be corroborated by multiple independent listings. Human-verified ShopGoodwill images can be added as high-trust domain-specific references.
+
+References are converted into ORB feature descriptors. A listing image is compared to the stated model's approved references, then RANSAC homography measures geometric agreement. Results are `reference_confirmed`, `reference_uncertain`, `reference_conflict`, or `no_reference`. Conflicts and uncertain matches are routed to manual review instead of silently changing the seller-stated model.
+
+```bash
+python3 src/motherboard_kb.py add-reference --model "ASUS P8P67 EVO" --source-type manufacturer --source /path/reference.jpg
+python3 src/motherboard_kb.py add-reference --model "ASUS P8P67 EVO" --source-type ebay --source /path/ebay.jpg --approved
+python3 src/motherboard_kb.py verify --model "ASUS P8P67 EVO" --images output/cache/ITEM_1.jpg
+```
+
+The knowledge base stores image files and generated features outside source code. The catalog records provenance, trust, hashes, revision, approval, and component-region metadata. Once a board is geometrically aligned, stored socket/DIMM/M.2 polygons can be projected into the listing image for focused component inspection.

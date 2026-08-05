@@ -2,7 +2,13 @@
   "schema_version": 1,
   "required_python": "3.11",
   "required_node": "18",
-  "required_commands": ["python3", "node", "npm", "gh", "tesseract"],
+  "required_commands": [
+    "python3",
+    "node",
+    "npm",
+    "gh",
+    "tesseract"
+  ],
   "required_files": [
     "config/detection_classes.json",
     "config/value_model.json",
@@ -11,7 +17,8 @@
     "config/deployment.json",
     "config/continual_learning.json",
     "config/operations.json",
-    "config/distributed.json"
+    "config/distributed.json",
+    "config/motherboard_kb.json"
   ],
   "release_manifest": "release-manifest.json"
 }

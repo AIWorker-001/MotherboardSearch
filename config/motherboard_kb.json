@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "catalog": "data/motherboard_kb/catalog.json",
+  "reference_root": "data/motherboard_kb/references",
+  "feature_root": "data/motherboard_kb/features",
+  "sources": {
+    "manufacturer": {"trust": 1.0, "requires_manual_approval": false},
+    "review_site": {"trust": 0.95, "requires_manual_approval": false},
+    "ebay": {"trust": 0.72, "requires_manual_approval": true, "minimum_agreeing_references": 2},
+    "shopgoodwill_verified": {"trust": 0.98, "requires_manual_approval": false}
+  },
+  "matching": {
+    "minimum_good_matches": 18,
+    "minimum_inlier_ratio": 0.32,
+    "minimum_identity_score": 0.58,
+    "conflict_score": 0.42,
+    "ratio_test": 0.75,
+    "maximum_references_per_model": 12
+  }
+}
