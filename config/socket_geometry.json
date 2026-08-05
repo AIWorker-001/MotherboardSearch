@@ -7,5 +7,8 @@
   "maximum_candidates": 20,
   "minimum_empty_lga_score": 0.55,
   "minimum_periodic_pin_score": 0.32,
-  "auto_accept_score": 0.68
+  "auto_accept_score": 0.68,
+  "port_buffer_ratio": 0.065,
+  "reference_minimum_area_ratio": 0.015,
+  "reference_maximum_area_ratio": 0.45
 }

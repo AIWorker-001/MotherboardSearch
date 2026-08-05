@@ -557,3 +557,18 @@ The report records whether the socket was located, the localization class and bo
 ### Rectangle-and-pin geometry fast path
 
 The socket-first detector now runs a deterministic empty-LGA fast path before learned localization when the listing indicates an Intel platform and does not mention an installed cooler. It searches for socket-sized quadrilaterals, then scores edge density, balanced horizontal/vertical structure, center-window contrast, square geometry, and repeated pin/contact texture. A positive result classifies the board as `empty_socket_likely` and records the candidate metrics and diagnostic overlay. Cooler-titled listings are excluded from this fast path to prevent heatsink or fan structures from being mistaken for exposed pins.
+
+
+### Reference-layout transfer
+
+`reference_layout.py` analyzes a clean, unobstructed image of a known motherboard before any ShopGoodwill classification. It detects the board boundary, rear-I/O buffer, vertical DIMM-slot bank, horizontal PCIe-slot bank, and the constrained CPU search rectangle between those anchors. Rectangle-and-pin geometry then selects the socket inside that reduced region. The resulting normalized CPU socket polygon is stored against the exact reference image ID. During ShopGoodwill verification, the existing reference homography projects that exact socket polygon into the auction photograph. The socket crop is then classified as exposed empty socket, visible CPU, or cooler-obscured.
+
+```bash
+python3 src/reference_layout.py \
+  --image data/motherboard_kb/references/BOARD/reference.jpg \
+  --output output/reference-layout.json \
+  --artifact output/reference-layout-overlay.jpg \
+  --catalog data/motherboard_kb/catalog.json \
+  --model "GIGABYTE Z370 AORUS Gaming 5" \
+  --reference-id <reference-id>
+```
