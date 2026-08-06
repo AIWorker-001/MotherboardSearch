@@ -9,9 +9,20 @@ from typing import Any
 import cv2
 import numpy as np
 
+try:
+    from .layout_schema import region_points, validate_reference_layout
+except ImportError:
+    from layout_schema import region_points, validate_reference_layout
+
+try:
+    from .layout_schema import region_points, validate_reference_layout
+except ImportError:
+    from layout_schema import region_points, validate_reference_layout
+
 COLORS = {
     'board': (255, 0, 0),
-    'pcie_slots': (0, 255, 0),
+    'pcie_x16_slots': (0, 255, 0),
+    'pcie_x1_slots': (255, 255, 0),
     'dimm_slots': (0, 255, 255),
     'io_rectangle': (0, 165, 255),
     'cpu_search_region': (255, 0, 255),
@@ -20,7 +31,8 @@ COLORS = {
 }
 
 LABELS = {
-    'pcie_slots': 'PCI-E',
+    'pcie_x16_slots': 'PCI-E x16',
+    'pcie_x1_slots': 'PCI-E x1',
     'dimm_slots': 'DRAM',
     'io_rectangle': 'REAR I/O',
     'cpu_search_region': 'CPU SEARCH',
@@ -92,6 +104,12 @@ def render(image_path: Path, annotation_path: Path, normalized_output: Path, ori
     if image is None:
         raise ValueError(f'cannot decode image: {image_path}')
     annotation = json.loads(annotation_path.read_text(encoding='utf-8'))
+    validation_errors = validate_reference_layout(annotation)
+    if validation_errors:
+        raise ValueError('invalid reference layout: ' + '; '.join(validation_errors))
+    validation_errors = validate_reference_layout(annotation)
+    if validation_errors:
+        raise ValueError('invalid reference layout: ' + '; '.join(validation_errors))
     width, height = canonical_size(annotation)
     forward, inverse = homographies(annotation)
     normalized = cv2.warpPerspective(image, forward, (width, height))
@@ -114,18 +132,21 @@ def render(image_path: Path, annotation_path: Path, normalized_output: Path, ori
         draw_polygon(original_overlay, projected, COLORS[name], LABELS[name], 5, dashed)
         projected_regions[name] = projected
 
-    for name in ['pcie_slots', 'dimm_slots']:
+    for name in ['pcie_x16_slots', 'pcie_x1_slots', 'dimm_slots']:
         projected_regions[name] = []
-        for index, points in enumerate(normalized_regions.get(name, []), start=1):
+        for index, region in enumerate(normalized_regions.get(name, []), start=1):
+            points = region_points(region)
             canonical = normalized_to_pixels(points, width, height)
             projected = project_polygon(canonical, inverse)
-            label = f"{LABELS[name]} {index}"
+            explicit_label = region.get('label') if isinstance(region, dict) else None
+            label = explicit_label or f"{LABELS[name]} {index}"
             draw_polygon(normalized_overlay, canonical, COLORS[name], label, 4)
             draw_polygon(original_overlay, projected, COLORS[name], label, 4)
             projected_regions[name].append(projected)
 
     legend = [
-        ('PCI-E', COLORS['pcie_slots']), ('DRAM', COLORS['dimm_slots']), ('REAR I/O', COLORS['io_rectangle']),
+        ('PCI-E x16', COLORS['pcie_x16_slots']), ('PCI-E x1', COLORS['pcie_x1_slots']),
+        ('DRAM', COLORS['dimm_slots']), ('REAR I/O', COLORS['io_rectangle']),
         ('CPU SEARCH', COLORS['cpu_search_region']), ('EXPECTED SOCKET', COLORS['cpu_socket']),
         ('REAR BRACKET', COLORS['rear_cpu_bracket']),
     ]

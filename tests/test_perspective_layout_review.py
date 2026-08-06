@@ -15,11 +15,13 @@ def test_render_writes_both_views(tmp_path: Path):
     annotation=tmp_path/'annotation.json'
     annotation.write_text(json.dumps({
       'board_corners':[[20,20],[380,30],[370,280],[30,270]],
+      'expected_counts':{'pcie_x16':1,'pcie_x1':1,'dimm':1},
       'canonical_size':[500,400],
       'normalized_regions':{
-        'io_rectangle':[[0,.1],[.15,.1],[.15,.7],[0,.7]],
-        'pcie_slots':[[[.2,.2],[.24,.2],[.24,.7],[.2,.7]]],
-        'dimm_slots':[[[.55,.75],[.9,.75],[.9,.79],[.55,.79]]],
+        'io_rectangle':[[.82,.1],[.97,.1],[.97,.7],[.82,.7]],
+        'pcie_x16_slots':[{'label':'X16','polygon':[[.2,.2],[.24,.2],[.24,.7],[.2,.7]]}],
+        'pcie_x1_slots':[{'label':'X1','polygon':[[.28,.25],[.31,.25],[.31,.36],[.28,.36]]}],
+        'dimm_slots':[{'label':'DIMM1','polygon':[[.55,.75],[.9,.75],[.9,.79],[.55,.79]]}],
         'cpu_search_region':[[.4,.2],[.8,.2],[.8,.7],[.4,.7]],
         'cpu_socket':[[.52,.3],[.7,.3],[.7,.55],[.52,.55]],
         'rear_cpu_bracket':[[.5,.28],[.72,.28],[.72,.57],[.5,.57]],
