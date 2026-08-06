@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "slot_geometry": {
+    "minimum_aspect_ratio": 5.0,
+    "minimum_length_ratio": 0.12,
+    "minimum_area_ratio": 0.0005,
+    "maximum_area_ratio": 0.08,
+    "maximum_candidates": 100,
+    "angle_tolerance_degrees": 12.0,
+    "spacing_tolerance_ratio": 0.12
+  }
+}
