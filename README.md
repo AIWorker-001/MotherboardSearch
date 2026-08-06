@@ -572,3 +572,15 @@ python3 src/reference_layout.py \
   --model "GIGABYTE Z370 AORUS Gaming 5" \
   --reference-id <reference-id>
 ```
+
+### Browser reference-board editor
+
+Known board layouts should be measured from a real reference image rather than approximated with synthetic normalized rectangles. Generate a standalone editor, open it locally in a browser, click the four exact corners of each requested feature, and download the resulting JSON and overlay.
+
+```bash
+python3 src/reference_board_editor.py \
+  --image output/accuracy-test/resized/272499468_1.jpg \
+  --output output/accuracy-test/z370-reference-editor/index.html
+```
+
+The editor records raw image coordinates and normalized coordinates for board corners, rear I/O, PCIe x16, PCIe x1, DIMMs, CPU search area, CPU socket, and rear CPU bracket. This data becomes the ground-truth reference geometry. Automatic predictions can then be compared against it with `reference_annotation_compare.py`; green is the manual annotation, red is the prediction, and white arrows show center error.
