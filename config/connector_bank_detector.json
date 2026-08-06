@@ -1,0 +1,7 @@
+{
+  "schema_version": 1,
+  "candidate_detector": {
+    "minimum_line_length": 45,
+    "maximum_candidates": 120
+  }
+}
