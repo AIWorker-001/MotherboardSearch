@@ -72,13 +72,63 @@ def detect_board_quad(image: np.ndarray) -> dict[str, Any]:
     if not candidates:
         raise RuntimeError('no plausible motherboard quadrilateral found')
     best = max(candidates, key=lambda row: row['score'])
+    raw_quad = np.rint(best['quad']).astype(int).tolist()
+    repair = infer_top_right_from_top_edge(raw_quad, (image.shape[1], image.shape[0]))
+    final_quad = repair.get('quad', raw_quad)
     return {
-        'quad': np.rint(best['quad']).astype(int).tolist(),
+        'quad': final_quad,
+        'raw_quad': raw_quad,
+        'top_right_repair': repair,
         'score': round(float(best['score']), 4),
         'method': best['method'],
         'candidate_count': len(candidates),
     }
 
+
+
+def infer_top_right_from_top_edge(quad: list[list[float]], image_size: tuple[int, int], minimum_inset_ratio: float = 0.04) -> dict[str, Any]:
+    """Repair a top-right point captured on raised rear-I/O hardware.
+
+    The visible PCB top edge is represented by TL -> observed TR. If observed TR
+    stops materially before the lower-right PCB edge, extend that straight top
+    edge until it reaches the right PCB boundary (approximated by BR.x). This is
+    intentionally conservative and only activates for a substantial horizontal
+    inset.
+    """
+    ordered = order_quad(np.asarray(quad, dtype=np.float32))
+    tl, observed_tr, br, bl = ordered
+    board_width = max(1.0, float(np.linalg.norm(br - bl)))
+    inset = float(br[0] - observed_tr[0])
+    result = {
+        'applied': False,
+        'reason': 'top_right_not_materially_inset',
+        'observed_top_right': observed_tr.tolist(),
+        'inferred_top_right': observed_tr.tolist(),
+        'horizontal_inset': round(inset, 2),
+        'horizontal_inset_ratio': round(inset / board_width, 4),
+    }
+    if inset <= board_width * minimum_inset_ratio:
+        return result
+    dx = float(observed_tr[0] - tl[0])
+    if abs(dx) < 1e-6:
+        result['reason'] = 'top_edge_is_vertical'
+        return result
+    slope = float(observed_tr[1] - tl[1]) / dx
+    target_x = float(br[0])
+    target_y = float(tl[1]) + slope * (target_x - float(tl[0]))
+    image_width, image_height = image_size
+    if not (-0.05 * image_height <= target_y <= 1.05 * image_height and 0 <= target_x <= image_width):
+        result['reason'] = 'inferred_corner_outside_image'
+        return result
+    repaired = ordered.copy()
+    repaired[1] = [target_x, target_y]
+    result.update({
+        'applied': True,
+        'reason': 'extended_straight_top_edge_to_right_pcb_edge',
+        'inferred_top_right': [round(target_x, 2), round(target_y, 2)],
+        'quad': np.rint(repaired).astype(int).tolist(),
+    })
+    return result
 
 def normalize_board(image: np.ndarray, quad: list[list[float]]) -> tuple[np.ndarray, np.ndarray]:
     ordered = order_quad(np.asarray(quad, dtype=np.float32))
